@@ -11,7 +11,9 @@ identifier       {letter}({digit}|{letter}|_)*
 blank            [\t\n\x0B\f\r\x20]+
 notes            \/\*.*\*\/
 %%
-#include             { return INCLUDE; }
+#include             { yylval.string_value = strdup(yytext); return INCLUDE; }
+<.*>                 { yylval.string_value = strdup(yytext); return HEADER_NAME; }
+<.*>                 { yylval.string_value = strdup(yytext); return LOCAL_HEADER_NAME; }
 #[^\n]*              { /* Discard preprocessor comments. */ }
 const                { yylval.string_value = strdup(yytext); return CONST;}
 if                   { yylval.string_value = strdup(yytext); return IF;}
