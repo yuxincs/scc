@@ -45,6 +45,6 @@ float                  { yylval.string_value = strdup(yytext); return TYPE; }
 
 int yywrap()
 {
-	return 1;
+    return 1;
 }
 
