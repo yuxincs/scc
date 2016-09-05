@@ -4,16 +4,18 @@
 #include "y.tab.h"
 %}
 %option yylineno
-digit            [0-9]
-number           {digit}+
-letter           [a-zA-Z]
-identifier       {letter}({digit}|{letter}|_)*
-blank            [\t\n\x0B\f\r\x20]+
-notes            \/\*.*\*\/
+digit             [0-9]
+number            {digit}+
+letter            [a-zA-Z]
+identifier        {letter}({digit}|{letter}|_)*
+blank             [\t\n\x0B\f\r\x20]+
+notes             \/\*.*\*\/
+header_name       <.*> 
+local_header_name ".*"
 %%
 #include               { yylval.string_value = strdup(yytext); return INCLUDE; }
-<.*>                   { yylval.string_value = strdup(yytext); return HEADER_NAME; }
-<.*>                   { yylval.string_value = strdup(yytext); return LOCAL_HEADER_NAME; }
+{header_name}          { yylval.string_value = strdup(yytext); return HEADER_NAME; }
+{local_header_name}    { yylval.string_value = strdup(yytext); return LOCAL_HEADER_NAME; }
 #[^\n]*                { /* Discard preprocessor comments. */ }
 const                  { yylval.string_value = strdup(yytext); return CONST;}
 if                     { yylval.string_value = strdup(yytext); return IF;}
