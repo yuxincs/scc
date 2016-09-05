@@ -4,6 +4,7 @@
 	#include <stdbool.h>
 	#include <string.h>
 	#include <stdarg.h>
+	#include "syntax.h"
 	#define INVALID -100
 	#define NON_TERMINAL 0
 	#define OPERATOR -1
@@ -25,21 +26,10 @@
 	bool is_to_print = false;
 	
 	// tree node definitions
-	typedef struct tree_node
-	{
-		int type;
-		union value_union{
-			int int_value;
-			char string_value[128];
-		}value;
-		int lineno;
-		struct tree_node * upper_layer;
-		struct tree_node * next;
-		struct tree_node * lower_layer;
-	}TreeNode;
-	TreeNode * root = NULL;
-	TreeNode * create_string_node(int type, char string_value[128]);
-	TreeNode * create_int_node(int type, int int_value);
+	
+	Syntax * root = NULL;
+	Syntax * create_string_node(int type, char string_value[128]);
+	Syntax * create_int_node(int type, int int_value);
 	void traverse(TreeNode * node, int depth);
 	void print_node(TreeNode * node, int depth);
 	
@@ -55,7 +45,7 @@
 %token <int_value> INTEGER
 %token <string_value> LESS_OR_EQUAL GREATER_OR_EQUAL
 %token <string_value> IDENTIFIER
-%token <string_value> '+' '-' '*' '/' '#' '<' '>' '=' '(' ')' ',' ';' '.'
+%token <string_value> '+' '-' '*' '/' '#' '<' '>' '=' '(' ')' ',' ';' '.' '~' '!'
 %type <string_value> relational_operator plus_minus multiply_divide
 %type <node_value> program sub_program const_statement var_statement  statement
 %type <node_value> const_declaration_list const_declaration identifier_list 
@@ -337,32 +327,6 @@ expression_list: expression
 	}
 	;
 %%
-int main(int argc, char ** argv)
-{
-	if(argc > 1)
-	{
-		yyin = fopen(argv[1], "r");
-		if(yyin == NULL)
-		{
-			printf("File doesn't exits.\n");
-			return 1;
-		}
-		strcpy(file_name, argv[1]);
-		
-		if(argc > 2)
-		{
-			if(strcmp(argv[2], "-print-tree") == 0)
-				is_to_print = true;
-			
-		}
-	}	
-	read_file();
-	yyparse();
-	if(!has_error)
-		printf("\033[1;32mCompile Success!\033[0m\n");
-    return 0;
-}
-
 void read_file()
 {
 	for(int i = 0; !feof(yyin); i++)
@@ -390,91 +354,4 @@ int yyerror(char *msg)
     
 	has_error = true;
 	return 0;
-}
-
-void traverse(TreeNode * node, int depth)
-{
-	if(node == NULL)
-		return;
-	
-	TreeNode * temp = node;
-	while(temp != NULL)
-	{
-		print_node(temp, depth);
-		traverse(temp->lower_layer, depth + 2);
-		temp = temp->next;
-	}
-	
-}
-
-void print_node(TreeNode * node, int depth)
-{
-	for(int i = 0;i < depth; i++)
-		putchar(' ');
-	
-	switch(node->type)
-	{
-	case INTEGER:
-		printf("%d \n", node->value.int_value);
-		break;
-	default:
-		printf("%s \n", node->value.string_value);
-	}	
-}
-
-TreeNode * create_string_node(int type, char string_value[128])
-{
-	TreeNode * node = (TreeNode *)malloc(sizeof(TreeNode));
-	node->type = type;
-	strcpy(node->value.string_value, string_value);
-	node->lineno = yylineno;
-	node->next = NULL;
-	node->upper_layer = NULL;
-	node->lower_layer = NULL;
-	return node;
-}
-
-TreeNode * create_int_node(int type, int int_value)
-{
-	TreeNode * node = (TreeNode *)malloc(sizeof(TreeNode));
-	node->type = type;
-	node->value.int_value = int_value;
-	node->lineno = yylineno;
-	node->next = NULL;
-	node->upper_layer = NULL;
-	node->lower_layer = NULL;
-	return node;
-}
-
-TreeNode * reduce(char name[128], int count, ...)
-{
-	TreeNode * upper_layer = create_string_node(NON_TERMINAL, name);
-	va_list argp;
-	va_start(argp, count);
-	TreeNode * head = NULL;
-	TreeNode * temp = NULL;
-	
-	TreeNode * cur = NULL;
-	for(int i = 0; i < count;i ++)
-	{
-		cur = va_arg(argp, TreeNode *);
-		if(cur == NULL)
-			continue;
-			
-		if(temp == NULL)
-		{
-			temp = cur;
-			head = cur;
-			head->upper_layer = upper_layer;
-		}
-		else
-		{
-			temp->next = cur;
-			temp = temp->next;
-			temp->upper_layer = upper_layer;
-		}
-	}
-	upper_layer->lower_layer = head;
-	va_end(argp);
-	return upper_layer;
 }
