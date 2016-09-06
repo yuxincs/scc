@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include "stack.h"
 
-Stack *stack_new() {
+Stack *stack_create() {
     Stack *stack = malloc(sizeof(Stack));
     stack->size = 0;
     stack->content = 0;
