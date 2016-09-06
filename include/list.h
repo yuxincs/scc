@@ -9,7 +9,7 @@ typedef struct List
 
 #define INITIAL_LIST_SIZE 32
 
-List *list_new(void);
+List *list_create(void);
 int list_length(List *list);
 void list_free(List *list);
 void list_append(List *list, void *item);
