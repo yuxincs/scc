@@ -38,294 +38,175 @@
 %union
 {
     int int_value;
+    float float_value;
     char * string_value;
-    struct tree_node * node_value;
+    struct Syntax * syntax_value;
 }
 %token <string_value> CONST WHILE DO IF INCLUDE RETURN TYPE
 %token <int_value> INTEGER
-%token <string_value> LESS_OR_EQUAL GREATER_OR_EQUAL
+%token <float_value> FLOAT
+%token <string_value> LESS_OR_EQUAL GREATER_OR_EQUAL AND OR
 %token <string_value> IDENTIFIER
 %token <string_value> '+' '-' '*' '/' '#' '<' '>' '=' '(' ')' ',' ';' '.' '~' '!'
 %type <string_value> relational_operator plus_minus multiply_divide
-%type <node_value> program sub_program const_statement var_statement  statement
-%type <node_value> const_declaration_list const_declaration identifier_list 
-%type <node_value> factor if_statement call_statement while_statement read_statement assign_statement
-%type <node_value> factor_list item_list expression condition empty_statement write_statement
-%type <node_value> complex_statement procedure_statement statement_list expression_list procedure_head
+
 %%
-program: 
-    {
-        root = create_string_node(NON_TERMINAL, "Program");
-        if(is_to_print)
-            traverse(root, 0);
-    }
-    |sub_program '.' 
-    {
-        TreeNode * dot = create_string_node('.', ".");
-        root = reduce("Program", 2, $1, dot);
-        if(is_to_print)
-            traverse(root, 0);
-    }
-    ;
-    
-sub_program: const_statement var_statement procedure_statement statement 
-    {
-        $$ = reduce("SubProgram", 4, $1, $2, $3, $4);
-    }
-    ;
-    
-const_statement: 
-    {
-        $$ = NULL;
-    }
-    | CONST const_declaration_list ';' 
-    {
-        TreeNode * const_node = create_string_node(CONST, "const");
-        TreeNode * colon_node = create_string_node(';', ";");
-        $$ = reduce("ConstStatement", 3, const_node, $2, colon_node);
-    }
-    ;
-    
-const_declaration_list: const_declaration 
-    {
-        $$ = $1;
-    }
-    | const_declaration_list ',' const_declaration 
-    {
-        TreeNode * comma_node = create_string_node(',', ",");
-        $$ = reduce("ConstDeclarationList", 3, $1, comma_node, $3);
-    }
-    ;
-    
-const_declaration: IDENTIFIER '=' INTEGER
-    {
-        TreeNode * identifier = create_string_node(IDENTIFIER, $1);
-        TreeNode * equal = create_string_node('=', "=");
-        TreeNode * integer = create_int_node(INTEGER, $3);
-        $$ = reduce("ConstDeclaration", 3, identifier, equal, integer);
-    }
-    ;
-    
-var_statement:
-    {
-        $$ = NULL;
-    }
-    |VAR identifier_list ';'
-    {
-        TreeNode * var_node = create_string_node(VAR, "var");
-        TreeNode * colon_node = create_string_node(';', ";");
-        $$ = reduce("VarStatement", 3, var_node, $2, colon_node);    
-    }
-    ;
-    
-identifier_list: IDENTIFIER 
-    {
-        TreeNode * identifier_node = create_string_node(IDENTIFIER, $1);
-        $$ = identifier_node;
-    }
-    | identifier_list ',' IDENTIFIER
-    {
-        TreeNode * identifier_node = create_string_node(IDENTIFIER, $3);
-        TreeNode * comma_node = create_string_node(',', ",");
-        $$ = reduce("IdentifierList", 3, $1, comma_node, identifier_node);
-    }
-    ;
-    
-procedure_statement:
-    {
-        $$ = NULL;
-    }
-    |procedure_head sub_program ';' procedure_statement
-    {
-        TreeNode * colon_node = create_string_node(';', ";");
-        $$ = reduce("ProcedureStatement", 4, $1, $2, colon_node, $4);
-    }
-    ;
-    
-procedure_head: PROCEDURE IDENTIFIER ';'
-    {
-        TreeNode * procedure_node = create_string_node(PROCEDURE, "procedure");
-        TreeNode * identifier_node = create_string_node(IDENTIFIER, $2);
-        TreeNode * colon_node = create_string_node(';', ";");
-        $$ = reduce("ProcedureHead", 3, procedure_node, identifier_node, colon_node);
-    }
-    ;
-    
-statement: assign_statement
-    |if_statement
-    |while_statement
-    |call_statement
-    |read_statement
-    |write_statement
-    |complex_statement
-    |empty_statement
-    ;
-    
-assign_statement: IDENTIFIER BECOMES expression
-    {
-        TreeNode * identifier_node = create_string_node(IDENTIFIER, $1);
-        TreeNode * becomes_node = create_string_node(BECOMES, ":=");
-        $$ = reduce("AssignStatement", 3, identifier_node, becomes_node, $3);
-    }
-    ;
-    
-complex_statement: BEGINN statement_list END
-    {
-        TreeNode * begin_node = create_string_node(BEGINN, "begin");
-        TreeNode * end_node = create_string_node(END, "end");
-        $$ = reduce("ComplexStatement", 3, begin_node, $2, end_node);
-    }
-    ;
-    
-statement_list: statement 
-    {
-        $$ = $1;
-    }
-    | statement_list ';' statement
-    {
-        TreeNode * colon_node = create_string_node(';', ";");
-        $$ = reduce("StatementList", 3, $1, colon_node, $3);
-    }
-    ;
-    
-empty_statement:
-    {
-        $$ = NULL;
-    }
-    ;
-    
-condition: expression relational_operator expression
-    {
-        TreeNode * relational_operator = create_string_node(OPERATOR, $2);
-        $$ = reduce("Condition", 3, $1, relational_operator, $3);
-    }
-    |ODD expression
-    {
-        TreeNode * odd_node = create_string_node(ODD, "odd");
-        $$ = reduce("Condition", 2, odd_node, $2);
-    }
-    ;
-    
-expression: item_list
-    {
-        $$ = $1;
-    }
-    | plus_minus item_list
-    {
-        TreeNode * plus_minus = create_string_node(OPERATOR, $1);
-        $$ = reduce("Expression", 2, plus_minus, $2);
-    }
-    ;
-    
-item_list: factor_list 
-    {
-        $$ = $1;
-    }
-    | item_list plus_minus factor_list
-    {
-        TreeNode * plus_minus = create_string_node(OPERATOR, $2);
-        $$ = reduce("ItemList", 3, $1, plus_minus, $3);
-    }
-    ;
-    
-    
-factor_list:factor 
-    {
-        $$ = $1;
-    }
-    |factor_list multiply_divide factor
-    {
-        TreeNode * multiply_divide = create_string_node(OPERATOR, $2);
-        $$ = reduce("FactorList", 3, $1, multiply_divide, $3);
-    }
-    ;
-    
-factor: IDENTIFIER
-    {
-        TreeNode * identifier_node = create_string_node(IDENTIFIER, $1);
-        $$ = identifier_node;
-    }
-    |INTEGER
-    {
-        TreeNode * integer_node = create_int_node(INTEGER, $1);
-        $$ = integer_node;
-    }
-    |'(' expression ')'
-    {
-        TreeNode * lbrace_node = create_string_node('(', "(");
-        TreeNode * rbrace_node = create_string_node(')', ")");
-        $$ = reduce("Factor", 3, lbrace_node, $2, rbrace_node);
-    }
-    ;
-    
-plus_minus: '+'
-    |'-'
-    ;
-    
-multiply_divide: '*'
-    |'/'
-    ;
-    
-relational_operator: '='
+program:
+        ext_definition_list
+        ;
+
+ext_definition_list:
+        ext_definition ext_definition_list
+        |
+        ;
+
+ext_def:
+        specifier ext_declaration_list ';'
+        |
+        specifier ';'
+        |
+        specifier function_declaration complex_statement
+        ;
+
+ext_declaration_list:
+        variable_declaration
+        |
+        variable_declaration ',' ext_declaration_list
+        ;
+
+specifier:
+        type
+        |
+        struct_specifier
+        ;
+
+struct_specifier:
+        STRUCT optional_tag '{' definition_list '}'
+        |
+        STRUCT IDENTIFIER
+        ;
+
+optional_tag:
+        IDENTIFIER
+        |
+        ;
+
+variable_declaration:
+        IDENTIFIER
+        |
+        variable_declaration '[' INTEGER ']'
+        ;
+
+function_declaration:
+        IDENTIFIER '(' variable_list ')'
+        |
+        IDENTIFIER '(' ')'
+        ;
+
+variable_list:
+        parameter_declaration ',' variable_list
+        |
+        parameter_declaration
+        ;
+
+complex_statement:
+        '{' definition_list statement_list '}'
+        ;
+
+statement_list:
+        statement statement_list
+        |
+        ;
+
+statement:
+        expression ';'
+        |
+        complex_statement
+        |
+        RETURN expression ';'
+        |
+        IF '(' expression ')' statement
+        |
+        IF '(' expression ')' ELSE statement
+        |
+        WHILE '(' expression ')' statement
+        ;
+
+definition_list:
+        definition definition_list
+        |
+        ;
+
+definition:
+        specifier declaration_list ';'
+        ;
+
+declaration_list:
+        declaration
+        |
+        declaration ',' declaration_list
+        ;
+
+declaration:
+        variable_declaration
+        |
+        variable_declaration '=' expression
+        ;
+
+relational_operator:
     |'#'
     |'<'
-    |LE
+    |LESS_OR_EQUAL
+    |EQUAL
+    |NOT_EQUAL
     |'>'
-    |GE
+    |GREATER_OR_EQUAL
     ;
-    
-if_statement: IF condition THEN statement 
-    {
-        TreeNode * if_node = create_string_node(IF, "if");
-        TreeNode * then_node = create_string_node(THEN, "then");
-        $$ = reduce("IfStatement", 4, if_node, $2, then_node, $4);
-    }
-    ;
-    
-call_statement: CALL IDENTIFIER
-    {
-        TreeNode * call_node = create_string_node(CALL, "call");
-        TreeNode * identifier_node = create_string_node(IDENTIFIER, $2);
-        $$ = reduce("CallStatement", 2, call_node, identifier_node);
-    }
-    ;
-    
-while_statement: WHILE condition DO statement
-    {
-        TreeNode * while_node = create_string_node(WHILE, "while");
-        TreeNode * do_node = create_string_node(DO, "do");
-        $$ = reduce("WhileStatement", 4, while_node, $2, do_node, $4);
-    }
-    ;
-    
-read_statement: READ '(' identifier_list ')'
-    {
-        TreeNode * read_node = create_string_node(READ, "read");
-        TreeNode * lbrace_node = create_string_node('(', "(");
-        TreeNode * rbrace_node = create_string_node(')', ")");
-        $$ = reduce("ReadStatement", 4, read_node, lbrace_node, $3, rbrace_node);
-    }
-    ;
-    
-write_statement: WRITE '(' expression_list ')' 
-    {
-        TreeNode * write_node = create_string_node(WRITE, "write");
-        TreeNode * lbrace_node = create_string_node('(', "(");
-        TreeNode * rbrace_node = create_string_node(')', ")");
-        $$ = reduce("WriteStatement", 4, write_node, lbrace_node, $3, rbrace_node);
-    }
-    ;
-    
-expression_list: expression 
-    {
-        $$ = NULL;
-    }
-    | expression_list ',' expression 
-    {
-        TreeNode * comma_node = create_string_node(',', ",");
-        $$ = reduce("ExpressionList", 3, $1, comma_node, $3);
-    }
-    ;
+
+expression:
+        expression '=' expression
+        |
+        expression AND expression
+        |
+        expression OR expression
+        |
+        expression relational_operator expression
+        |
+        expression '+' expression
+        |
+        expression '-' expression
+        |
+        expression '*' expression
+        |
+        expression '\\' expression
+        |
+        '(' expression ')'
+        |
+        '-' expression
+        |
+        '!' expression
+        |
+        IDENTIFIER '(' argument_list ')'
+        |
+        IDENTIFIER '(' ')' 
+        |
+        expression '(' expression ')'
+        |
+        expression '.' IDENTIFIER
+        |
+        IDENTIFIER
+        |
+        INTEGER
+        |
+        FLOAT
+        ;
+
+argument_list:
+        expression ',' argument_list
+        |
+        expression
+        ;
+
 %%
 void read_file()
 {
