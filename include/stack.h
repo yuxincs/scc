@@ -8,8 +8,7 @@ typedef struct Stack {
     void **content;
 } Stack;
 
-Stack *stack_new();
-
+Stack *stack_create();
 void stack_free(Stack *stack);
 void stack_push(Stack *stack, void *item);
 void *stack_pop(Stack *stack);
