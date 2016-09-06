@@ -10,20 +10,15 @@ letter            [a-zA-Z]
 identifier        {letter}({digit}|{letter}|_)*
 blank             [\t\n\x0B\f\r\x20]+
 notes             \/\*.*\*\/
-header_name       <.*> 
-local_header_name ".*"
 %%
-#include               { yylval.string_value = strdup(yytext); return INCLUDE; }
-{header_name}          { yylval.string_value = strdup(yytext); return HEADER_NAME; }
-{local_header_name}    { yylval.string_value = strdup(yytext); return LOCAL_HEADER_NAME; }
 #[^\n]*                { /* Discard preprocessor comments. */ }
 const                  { yylval.string_value = strdup(yytext); return CONST;}
 if                     { yylval.string_value = strdup(yytext); return IF;}
 while                  { yylval.string_value = strdup(yytext); return WHILE;}
 struct                 { yylval.string_value = strdup(yytext); return STRUCT;}
 return                 { yylval.string_value = strdup(yytext); return RETURN; }
-int                    { yylval.string_value = strdup(yytext); return TYPE; }
-float                  { yylval.string_value = strdup(yytext); return TYPE; }
+int                    { yylval.string_value = strdup(yytext); return INT; }
+float                  { yylval.string_value = strdup(yytext); return FLOAT; }
 
 {identifier}           { yylval.string_value = strdup(yytext); return IDENTIFIER;}
 
