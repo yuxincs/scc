@@ -1,5 +1,6 @@
 #include "syntax.h"
 
+/*
 Syntax * create_string_node(int type, char string_value[128])
 {
     Syntax * node = (TreeNode *)malloc(sizeof(TreeNode));
@@ -86,4 +87,4 @@ Syntax * reduce(char name[128], int count, ...)
     upper_layer->lower_layer = head;
     va_end(argp);
     return upper_layer;
-}
+}*/
