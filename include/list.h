@@ -1,7 +1,7 @@
 #ifndef SCC_LIST_HEADER
 #define SCC_LIST_HEADER
 
-typedef struct List 
+typedef struct _List 
 {
     int size;
     void **items;
