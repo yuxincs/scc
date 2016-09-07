@@ -24,7 +24,7 @@ return                 { return RETURN; }
 {type}                 { yylval.string_value = strdup(yytext); return TYPE; }
 {identifier}           { yylval.string_value = strdup(yytext); return IDENTIFIER;}
 {integer}              { yylval.int_value = atoi(yytext); return INTEGER;}
-{float}                { yylval.int_value = atof(yytext); return FLOAT_NUMBER;}
+{float}                { yylval.float_value = atof(yytext); return FLOAT_NUMBER;}
 
 [=][=]                 { return EQUAL;}
 [!][=]                 { return NOT_EQUAL;}
