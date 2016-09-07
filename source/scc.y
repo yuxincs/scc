@@ -5,50 +5,35 @@
     #include <string.h>
     #include <stdarg.h>
     #include "syntax.h"
-    #define INVALID -100
-    #define NON_TERMINAL 0
-    #define OPERATOR -1
+
+    // lex variable declarations
     extern int yylex();
     extern FILE * yyin;
     extern int yylineno;
     extern char * yytext;
     
-    // for reading file
-    char * file_content[1024];
     char file_name[1024];
-    void read_file();
-    
-    // error print
-    bool has_error = false;
+    char *file_content[1024];
     int yyerror(char * msg);
-    
-    // grammer tree print option
-    bool is_to_print = false;
-    
-    // tree node definitions
-    
-    Syntax * root = NULL;
-    Syntax * create_string_node(int type, char string_value[128]);
-    Syntax * create_int_node(int type, int int_value);
-    void traverse(TreeNode * node, int depth);
-    void print_node(TreeNode * node, int depth);
-    
-    TreeNode * reduce(char name[128], int count, ...);
 %}
 %union
 {
     int int_value;
     float float_value;
     char * string_value;
-    struct Syntax * syntax_value;
+    Syntax * syntax_value;
 }
-%token <string_value> CONST WHILE DO IF INCLUDE RETURN TYPE
+%token CONST WHILE DO IF INCLUDE RETURN ELSE STRUCT
+%token LESS_OR_EQUAL GREATER_OR_EQUAL AND OR EQUAL NOT_EQUAL
 %token <int_value> INTEGER
-%token <float_value> FLOAT
-%token <string_value> LESS_OR_EQUAL GREATER_OR_EQUAL AND OR
-%token <string_value> IDENTIFIER
-%token <string_value> '+' '-' '*' '/' '#' '<' '>' '=' '(' ')' ',' ';' '.' '~' '!'
-%type <string_value> relational_operator plus_minus multiply_divide
+%token <float_value> FLOAT_NUMBER
+%token <string_value> IDENTIFIER TYPE
+%token '+' '-' '*' '/' '#' '<' '>' '=' '(' ')' ',' ';' '.' '~' '!'
+%type <syntax_value> program ext_definition_list ext_definition ext_declaration_list
+%type <syntax_value> specifier struct_specifier optional_tag variable_declaration
+%type <syntax_value> function_declaration variable_list
+%type <syntax_value> statement_list statement definition_list declaration expression
+%type <syntax_value> argument_list parameter_declaration
 
 %%
 program:
@@ -60,7 +45,7 @@ ext_definition_list:
         |
         ;
 
-ext_def:
+ext_definition:
         specifier ext_declaration_list ';'
         |
         specifier ';'
@@ -75,7 +60,7 @@ ext_declaration_list:
         ;
 
 specifier:
-        type
+        TYPE
         |
         struct_specifier
         ;
@@ -107,6 +92,10 @@ variable_list:
         parameter_declaration ',' variable_list
         |
         parameter_declaration
+        ;
+
+parameter_declaration:
+        specifier variable_declaration
         ;
 
 complex_statement:
@@ -154,14 +143,14 @@ declaration:
         ;
 
 relational_operator:
-    |'#'
-    |'<'
-    |LESS_OR_EQUAL
-    |EQUAL
-    |NOT_EQUAL
-    |'>'
-    |GREATER_OR_EQUAL
-    ;
+        |'#'
+        |'<'
+        |LESS_OR_EQUAL
+        |EQUAL
+        |NOT_EQUAL
+        |'>'
+        |GREATER_OR_EQUAL
+        ;
 
 expression:
         expression '=' expression
@@ -198,7 +187,7 @@ expression:
         |
         INTEGER
         |
-        FLOAT
+        FLOAT_NUMBER
         ;
 
 argument_list:
@@ -208,23 +197,12 @@ argument_list:
         ;
 
 %%
-void read_file()
-{
-    for(int i = 0; !feof(yyin); i++)
-    {
-        file_content[i] = (char * )malloc(1024 * sizeof(char));
-        fgets(file_content[i], 1024, yyin);
-        file_content[i][strlen(file_content[i]) - 1] = '\0';
-    }
-    fseek(yyin, 0, 0);
-}
-
 int yyerror(char *msg)
 {
-    char buf[1024];
     printf("\033[1m%s [%d] \033[1;31merror:\033[0m\033[1m %s in\033[0m\n", file_name, yylineno, msg);
     printf("%s\n", file_content[yylineno -1 ]);
     int index = strstr(file_content[yylineno - 1], yytext) - file_content[yylineno - 1];
+    
     printf("\033[1;32m");
     for(int i = 0;i < index;i ++)
         putchar(' ');
@@ -232,7 +210,5 @@ int yyerror(char *msg)
         putchar('^');
     putchar('\n');
     printf("\033[0m");
-    
-    has_error = true;
     return 0;
 }
