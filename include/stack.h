@@ -3,7 +3,7 @@
 #ifndef SCC_STACK_HEADER
 #define SCC_STACK_HEADER
 
-typedef struct Stack {
+typedef struct _Stack {
     int size;
     void **content;
 } Stack;
