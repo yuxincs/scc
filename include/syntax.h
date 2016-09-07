@@ -1,6 +1,11 @@
 #ifndef SCC_SYNTAX_HEADER
 #define SCC_SYNTAX_HEADER
 
+struct _List;
+typedef struct _List List;
+struct _Syntax;
+typedef struct _Syntax Syntax;
+
 /* Typedefs for syntax types  */
 typedef enum 
 {
@@ -26,7 +31,7 @@ typedef enum
     FLOAT,
     DOUBLE,
     ARRAY,
-    STRUCT
+    STRUCTURE
 } VariableType;
 
 typedef enum 
@@ -113,7 +118,8 @@ typedef struct Block
     List *statements; 
 } Block;
 
-typedef struct Function {
+typedef struct Function 
+{
     char *name;
     List *parameters;
     Syntax *root_block;
@@ -130,10 +136,11 @@ typedef struct TopLevel
     List *declarations; 
 } TopLevel;
 
-typedef struct _Syntax
+struct _Syntax
 {
     SyntaxType type;
-    union {
+    union 
+    {
         Immediate *immediate;
         Variable *variable;
         UnaryExpression *unary_expression;
@@ -149,7 +156,7 @@ typedef struct _Syntax
         Function *function;
         TopLevel *top_level;
     };
-}Syntax;
+};
 
 
 
