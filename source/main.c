@@ -4,6 +4,8 @@
 #include "scc_yacc.hpp"
 
 extern FILE * yyin;
+// TODO: This method for showing more details about the file content
+// when encountering errors is not very neat and needed to be optimized
 extern char *file_content[1024];
 extern char file_name[1024];
 extern int yyparse();
@@ -32,14 +34,20 @@ int main(int argc, char ** argv)
             return 1;
         }
     }
+    // read file
+    read_file();
+
     // TODO: macro expansion
 
     // grammer analysis
-    read_file();
     if(yyparse() != 0)
         return 0;
 
-    // semantic analysis
+    // TODO: semantic analysis
+
+    // TODO: generate intermidiate code
+
+    // TODO: generate objective code from intermidiate code
     
     printf("\033[1;32mCompile Success!\033[0m\n");
     return 0;
