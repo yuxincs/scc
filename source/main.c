@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "list.h"
 #include "syntax.h"
-#include "scc_yacc.hpp"
+#include "scc_yacc.h"
 
 extern FILE * yyin;
 // TODO: This method for showing more details about the file content

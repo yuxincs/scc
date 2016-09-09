@@ -10,7 +10,7 @@ include_directories(include ${CMAKE_CURRENT_BINARY_DIR})
 find_package(BISON)
 find_package(FLEX)
 flex_target(SCANNER source/scc.l ${CMAKE_CURRENT_BINARY_DIR}/scc_lex.c)
-bison_target(PARSER source/scc.y ${CMAKE_CURRENT_BINARY_DIR}/scc_yacc.c COMPILE_FLAGS -d)
+bison_target(PARSER source/scc.y ${CMAKE_CURRENT_BINARY_DIR}/scc_yacc.c)
 ADD_FLEX_BISON_DEPENDENCY(SCANNER PARSER)
 
 file(GLOB_RECURSE SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/source/*.c")
