@@ -143,13 +143,20 @@ declaration:
         ;
 
 relational_operator:
-        |'#'
-        |'<'
-        |LESS_OR_EQUAL
-        |EQUAL
-        |NOT_EQUAL
-        |'>'
-        |GREATER_OR_EQUAL
+        |
+        '#'
+        |
+        '<'
+        |
+        LESS_OR_EQUAL
+        |
+        EQUAL
+        |
+        NOT_EQUAL
+        |
+        '>'
+        |
+        GREATER_OR_EQUAL
         ;
 
 expression:
