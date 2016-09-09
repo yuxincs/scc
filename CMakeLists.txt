@@ -4,6 +4,8 @@ project(scc)
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR})
 
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
+
 include_directories(include ${CMAKE_CURRENT_BINARY_DIR})
 
 # bison and flex
