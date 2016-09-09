@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "syntax.h"
-#include "scc_yacc.hpp"
+#include "scc_yacc.h"
 %}
 %option yylineno
 integer                  [1-9]+[0-9]*|0
