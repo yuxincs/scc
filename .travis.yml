@@ -6,8 +6,8 @@ branches:
   - master
 
 script:
-  mkdir build && cd build && cmake ..
-  make
+  - mkdir build && cd build && cmake ..
+  - make
 
 compiler:
   - clang
