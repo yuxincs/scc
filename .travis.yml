@@ -1,0 +1,18 @@
+language:
+  c
+
+branches:
+  only:
+  - master
+
+before_install:
+  apt-get install yacc
+  apt-get install flex
+
+script:
+  mkdir build && cd build && cmake ..
+  make
+
+compiler:
+  - clang
+  - gcc
