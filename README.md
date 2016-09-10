@@ -16,7 +16,7 @@ With syntax and semantic checks available, I aim to make the compiler as complet
 * Basic varibale types (only `float` and `int` is supported)
 * Variable assignment
 * While loops (`while (foo) { bar }`)
-* Function calls (only `int foo()` i.e. no arguments, returning int)
+* Function calls
 
 ## TODO
 * Preprocessor usage
