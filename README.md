@@ -1,8 +1,10 @@
 # Scc [![Build Status](https://travis-ci.org/RyanWangGit/scc.svg?branch=master)](https://travis-ci.org/RyanWangGit/scc)
 
-A Simple C Compiler Written in C For Compiler Course Project. It Aims Only to Compile A Subset of C Standard to X86 Assembly.
+A Simple C Compiler Written in C For Compiler Course Project.
 
-With syntax and semantic checks available, I aim to make the compile as complete as possible though it is just a toy compiler.
+It aims only to compile a subset of C Standard to X86 Assembly.
+
+With syntax and semantic checks available, I aim to make the compiler as complete as possible though it is just a toy compiler.
 
 ## Current feature set
 * Basic operations (e.g. addition multiplication less than operation bitwise negation etc.)
