@@ -29,7 +29,7 @@
 %token <float_value> FLOAT_NUMBER
 %token <string_value> IDENTIFIER TYPE
 %token '+' '-' '*' '/' '#' '<' '>' '=' '(' ')' ',' ';' '.' '~' '!'
-%type <syntax_value> program ext_definition_list ext_definition ext_declaration_list
+%type <syntax_value> program extended_definition_list extended_definition extended_declaration_list
 %type <syntax_value> specifier struct_specifier optional_tag variable_declaration
 %type <syntax_value> function_declaration variable_list
 %type <syntax_value> statement_list statement definition_list declaration expression
@@ -37,26 +37,26 @@
 
 %%
 program:
-        ext_definition_list
+        extended_definition_list
         ;
 
-ext_definition_list:
-        ext_definition ext_definition_list
+extended_definition_list:
+        extended_definition extended_definition_list
         |
         ;
 
-ext_definition:
-        specifier ext_declaration_list ';'
+extended_definition:
+        specifier extended_declaration_list ';'
         |
         specifier ';'
         |
         specifier function_declaration complex_statement
         ;
 
-ext_declaration_list:
+extended_declaration_list:
         variable_declaration
         |
-        variable_declaration ',' ext_declaration_list
+        variable_declaration ',' extended_declaration_list
         ;
 
 specifier:
