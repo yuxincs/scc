@@ -39,7 +39,7 @@ int main(int argc, char ** argv)
 
     // TODO: macro expansion
 
-    // grammer analysis
+    // syntax analysis
     if(yyparse() != 0)
         return 0;
 
