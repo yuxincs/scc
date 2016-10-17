@@ -11,6 +11,8 @@
     extern FILE * yyin;
     extern int yylineno;
     extern char * yytext;
+
+    // top level syntax definition exists in main.c
     extern Syntax * top_level;
     
     char file_name[1024];

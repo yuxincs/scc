@@ -10,6 +10,8 @@ extern char *file_content[1024];
 extern char file_name[1024];
 extern int yyparse();
 
+Syntax * top_level;
+
 void read_file()
 {
     for(int i = 0; !feof(yyin); i++)
