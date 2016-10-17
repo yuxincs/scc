@@ -11,6 +11,7 @@
     extern FILE * yyin;
     extern int yylineno;
     extern char * yytext;
+    extern Syntax * top_level;
     
     char file_name[1024];
     char *file_content[1024];
@@ -34,112 +35,218 @@
 %type <syntax_value> function_declaration variable_list
 %type <syntax_value> statement_list statement definition_list declaration expression
 %type <syntax_value> argument_list parameter_declaration
+%left '='
+%left '<'
+%left '+'
+%left '-'
+%left '*'
+%nonassoc '!'
+%nonassoc '~'
 
 %%
 program:
         extended_definition_list
+        {
+            
+        }
         ;
 
 extended_definition_list:
         extended_definition extended_definition_list
+        {
+
+        }
         |
         ;
 
 extended_definition:
         specifier extended_declaration_list ';'
+        {
+
+        }
         |
         specifier ';'
+        {
+
+        }
         |
         specifier function_declaration complex_statement
+        {
+
+        }
         ;
 
 extended_declaration_list:
         variable_declaration
+        {
+
+        }
         |
         variable_declaration ',' extended_declaration_list
+        {
+
+        }
         ;
 
 specifier:
         TYPE
+        {
+
+        }
         |
         struct_specifier
+        {
+
+        }
         ;
 
 struct_specifier:
         STRUCT optional_tag '{' definition_list '}'
+        {
+
+        }
         |
         STRUCT IDENTIFIER
+        {
+
+        }
         ;
 
 optional_tag:
         IDENTIFIER
+        {
+
+        }
         |
         ;
 
 variable_declaration:
         IDENTIFIER
+        {
+
+        }
         |
         variable_declaration '[' INTEGER ']'
+        {
+
+        }
         ;
 
 function_declaration:
         IDENTIFIER '(' variable_list ')'
+        {
+
+        }
         |
         IDENTIFIER '(' ')'
+        {
+
+        }
         ;
 
 variable_list:
         parameter_declaration ',' variable_list
+        {
+
+        }
         |
         parameter_declaration
+        {
+
+        }
         ;
 
 parameter_declaration:
         specifier variable_declaration
+        {
+
+        }
         ;
 
 complex_statement:
         '{' definition_list statement_list '}'
+        {
+
+        }
         ;
 
 statement_list:
         statement statement_list
+        {
+
+        }
         |
         ;
 
 statement:
         expression ';'
+        {
+
+        }
         |
         complex_statement
+        {
+
+        }
         |
         RETURN expression ';'
+        {
+
+        }
         |
         IF '(' expression ')' statement
+        {
+
+        }
         |
         IF '(' expression ')' ELSE statement
+        {
+
+        }
         |
         WHILE '(' expression ')' statement
+        {
+
+        }
         ;
 
 definition_list:
         definition definition_list
+        {
+
+        }
         |
         ;
 
 definition:
         specifier declaration_list ';'
+        {
+
+        }
         ;
 
 declaration_list:
         declaration
+        {
+
+        }
         |
         declaration ',' declaration_list
+        {
+
+        }
         ;
 
 declaration:
         variable_declaration
+        {
+
+        }
         |
         variable_declaration '=' expression
+        {
+
+        }
         ;
 
 relational_operator:
@@ -161,46 +268,106 @@ relational_operator:
 
 expression:
         expression '=' expression
+        {
+
+        }
         |
         expression AND expression
+        {
+
+        }
         |
         expression OR expression
+        {
+
+        }
         |
         expression relational_operator expression
+        {
+
+        }
         |
         expression '+' expression
+        {
+
+        }
         |
         expression '-' expression
+        {
+
+        }
         |
         expression '*' expression
+        {
+
+        }
         |
         expression '\\' expression
+        {
+
+        }
         |
         '(' expression ')'
+        {
+
+        }
         |
         '-' expression
+        {
+
+        }
         |
         '!' expression
+        {
+
+        }
         |
         IDENTIFIER '(' argument_list ')'
+        {
+
+        }
         |
-        IDENTIFIER '(' ')' 
+        IDENTIFIER '(' ')'
+        {
+
+        } 
         |
         expression '(' expression ')'
+        {
+
+        }
         |
         expression '.' IDENTIFIER
+        {
+
+        }
         |
         IDENTIFIER
+        {
+
+        }
         |
         INTEGER
+        {
+
+        }
         |
         FLOAT_NUMBER
+        {
+
+        }
         ;
 
 argument_list:
         expression ',' argument_list
+        {
+
+        }
         |
         expression
+        {
+
+        }
         ;
 
 %%
