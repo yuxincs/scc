@@ -133,7 +133,7 @@ typedef struct Parameter
 
 typedef struct TopLevel 
 { 
-    List *declarations; 
+    List *definitions; 
 } TopLevel;
 
 struct _Syntax
