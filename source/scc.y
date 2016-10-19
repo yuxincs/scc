@@ -4,6 +4,7 @@
     #include <stdbool.h>
     #include <string.h>
     #include <stdarg.h>
+    #include "list.h"
     #include "syntax.h"
 
     // lex variable declarations
@@ -32,7 +33,7 @@
 %token <float_value> FLOAT_NUMBER
 %token <string_value> IDENTIFIER TYPE
 %token '+' '-' '*' '/' '#' '<' '>' '=' '(' ')' ',' ';' '.' '~' '!'
-%type <syntax_value> program extended_definition_list extended_definition extended_declaration_list
+%type <syntax_value> program external_definition_list external_definition external_declaration_list
 %type <syntax_value> specifier struct_specifier optional_tag variable_declaration
 %type <syntax_value> function_declaration variable_list
 %type <syntax_value> statement_list statement definition_list declaration expression
@@ -47,22 +48,27 @@
 
 %%
 program:
-        extended_definition_list
+        external_definition_list
+        {
+            top_level = (Syntax *)malloc(sizeof(Syntax));
+            top_level->type = TOP_LEVEL;
+            top_level->top_level->declarations = list_create();
+        }
+        ;
+
+external_definition_list:
+        external_definition external_definition_list
+        {
+            
+        }
+        |
         {
             
         }
         ;
 
-extended_definition_list:
-        extended_definition extended_definition_list
-        {
-
-        }
-        |
-        ;
-
-extended_definition:
-        specifier extended_declaration_list ';'
+external_definition:
+        specifier external_declaration_list ';'
         {
 
         }
@@ -78,13 +84,13 @@ extended_definition:
         }
         ;
 
-extended_declaration_list:
+external_declaration_list:
         variable_declaration
         {
 
         }
         |
-        variable_declaration ',' extended_declaration_list
+        variable_declaration ',' external_declaration_list
         {
 
         }
