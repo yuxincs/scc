@@ -11,12 +11,12 @@ typedef enum
 {
     IMMEDIATE,
     VARIABLE,
-    UNARY_OPERATOR,
-    BINARY_OPERATOR,
+    UNARY_EXPRESSION,
+    BINARY_EXPRESSION,
     BLOCK,
     IF_STATEMENT,
     RETURN_STATEMENT,
-    DEFINE_VAR,
+    DEFINE_VARIABLE_STATEMENT,
     FUNCTION,
     FUNCTION_CALL,
     FUNCTION_ARGUMENTS,
@@ -158,6 +158,8 @@ struct _Syntax
     };
 };
 
+Syntax * syntax_new(SyntaxType type);
+void syntax_delete(Syntax * syntax);
 
 
 #endif
