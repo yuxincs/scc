@@ -13,6 +13,7 @@ List *list_create(void);
 int list_length(List *list);
 void list_free(List *list);
 void list_append(List *list, void *item);
+void list_prepend(List *list, void *item);
 void list_push(List *list, void *item);
 void *list_pop(List *list);
 void *list_get(List *list, int index);
