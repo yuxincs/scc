@@ -4,7 +4,7 @@
 #include <err.h>
 #include "list.h"
 
-List *list_create(void)
+List *list_new(void)
 {
     List *list = malloc(sizeof(List));
     list->size = 0;
@@ -13,7 +13,7 @@ List *list_create(void)
     return list;
 };
 
-void list_free(List *list) 
+void list_delete(List *list) 
 {
     if (list->items != NULL) {
         free(list->items);
