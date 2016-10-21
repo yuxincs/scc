@@ -1,4 +1,12 @@
-int main()
+
+int a;
+struct foo
+{
+    int a;
+    float b;
+};
+
+void main()
 {
     return 0;
 }
