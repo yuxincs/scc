@@ -45,6 +45,8 @@ int main(int argc, char ** argv)
     if(yyparse() != 0)
         return 0;
 
+    print_syntax(top_level);
+
     // TODO: semantic analysis
 
     // TODO: generate intermidiate code
