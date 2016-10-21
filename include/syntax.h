@@ -16,23 +16,23 @@ typedef enum
     BLOCK,
     IF_STATEMENT,
     RETURN_STATEMENT,
-    DEFINE_VARIABLE_STATEMENT,
     FUNCTION,
     FUNCTION_CALL,
     FUNCTION_ARGUMENTS,
     ASSIGNMENT,
     WHILE_SYNTAX,
-    TOP_LEVEL
+    TOP_LEVEL,
+    VARIABLE_TYPE
 } SyntaxType;
 
 typedef enum
 {
+    VOID,
     INT,
     FLOAT,
-    DOUBLE,
     ARRAY,
     STRUCTURE
-} VariableType;
+} Type;
 
 typedef enum 
 { 
@@ -45,6 +45,9 @@ typedef enum
     ADDITION,
     SUBTRACTION,
     MULTIPLICATION,
+    DIVISION,
+    GREATER_THAN,
+    GREATER_THAN_OR_EQUAL,
     LESS_THAN,
     LESS_THAN_OR_EQUAL,
 } BinaryExpressionType;
@@ -56,9 +59,15 @@ typedef struct Immediate
 
 typedef struct Variable 
 {
-    VariableType type;
+    Syntax *type;
     char *name;
 } Variable;
+
+typedef struct VariableType 
+{
+    Type type;
+    char *name;
+} VariableType;
 
 typedef struct UnaryExpression 
 {
@@ -96,12 +105,6 @@ typedef struct IfStatement
     Syntax *then;
 } IfStatement;
 
-typedef struct DefineVarStatement 
-{
-    char *name;
-    Syntax *init_value;
-} DefineVarStatement;
-
 typedef struct WhileStatement 
 {
     Syntax *condition;
@@ -120,8 +123,9 @@ typedef struct Block
 
 typedef struct Function 
 {
+    Syntax *type;
     char *name;
-    List *parameters;
+    Syntax *arguments;
     Syntax *root_block;
 } Function;
 
@@ -133,7 +137,7 @@ typedef struct Parameter
 
 typedef struct TopLevel 
 { 
-    List *definitions; 
+    List *statements; 
 } TopLevel;
 
 struct _Syntax
@@ -143,6 +147,7 @@ struct _Syntax
     {
         Immediate *immediate;
         Variable *variable;
+        VariableType *variable_type;
         UnaryExpression *unary_expression;
         BinaryExpression *binary_expression;
         Assignment *assignment;
@@ -150,7 +155,6 @@ struct _Syntax
         FunctionArguments *function_arguments;
         FunctionCall *function_call;
         IfStatement *if_statement;
-        DefineVarStatement *define_var_statement;
         WhileStatement *while_statement;
         Block *block;
         Function *function;
@@ -160,6 +164,7 @@ struct _Syntax
 
 Syntax * syntax_new(SyntaxType type);
 void syntax_delete(Syntax * syntax);
+void print_syntax(Syntax * syntax);
 
 
 #endif
