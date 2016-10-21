@@ -8,7 +8,7 @@ List *list_new(void)
 {
     List *list = malloc(sizeof(List));
     list->size = 0;
-    list->items = NULL;
+    list->items = malloc(sizeof(void *) * 1);
 
     return list;
 };
@@ -21,7 +21,13 @@ void list_delete(List *list)
     free(list);
 }
 
-int list_length(List *list) { return list->size; }
+int list_length(List *list) 
+{
+    if(list == NULL)
+        return 0;
+    else 
+        return list->size; 
+}
 
 void list_append(List *list, void *item) 
 {
@@ -47,6 +53,7 @@ void list_prepend(List *list, void *item)
 
     list->items[0] = item;
 }
+
 
 /* Remove the last item from the list, and return it.
  */
