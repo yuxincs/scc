@@ -20,8 +20,9 @@ if                       { return IF;}
 while                    { return WHILE;}
 struct                   { return STRUCT;}
 return                   { return RETURN; }
+void                     { return VOID; }
 
-{type}                   { yylval.string_value = strdup(yytext); return TYPE; }
+{type}                   { yylval.string_value = strdup(yytext); return BASIC_TYPE; }
 {identifier}             { yylval.string_value = strdup(yytext); return IDENTIFIER;}
 {integer}                { yylval.int_value = atoi(yytext); return INTEGER;}
 {float}                  { yylval.float_value = atof(yytext); return FLOAT_NUMBER;}
