@@ -1,5 +1,38 @@
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 #include "syntax.h"
+#include "list.h"
+
+#define PRINT_SPACE(x) {for(int i = 0;i < (x); ++i) { putchar(' '); }}
+
+
+// private functions declarations
+char * string_new(int size);
+Syntax * default_syntax_new(SyntaxType type);
+void default_syntax_delete(Syntax * syntax);
+void print_syntax_depth(Syntax * syntax, int depth);
+
+
+
+Syntax * syntax_new(SyntaxType type)
+{
+    return default_syntax_new(type);
+}
+
+void syntax_delete(Syntax * syntax)
+{
+    default_syntax_delete(syntax);
+    return;
+}
+
+void print_syntax(Syntax * syntax)
+{
+    print_syntax_depth(syntax, 0);
+}
+
+
+
 
 char * string_new(int size)
 {
@@ -23,7 +56,7 @@ Syntax * default_syntax_new(SyntaxType type)
         case VARIABLE:
         {
             syntax->variable = (Variable *)malloc(sizeof(Variable));
-            syntax->variable->type = INT;
+            syntax->variable->type = NULL;
             syntax->variable->name = (char *)malloc(sizeof(char) * 33);
             break;
         }
@@ -61,18 +94,11 @@ Syntax * default_syntax_new(SyntaxType type)
             syntax->return_statement->expression = NULL;
             break;
         }
-        case DEFINE_VARIABLE_STATEMENT:
-        {
-            syntax->define_var_statement = (DefineVarStatement *)malloc(sizeof(DefineVarStatement));
-            syntax->define_var_statement->name = string_new(33);
-            syntax->define_var_statement->init_value = NULL;
-            break;
-        }
         case FUNCTION:
         {
             syntax->function = (Function *)malloc(sizeof(Function));
             syntax->function->name = string_new(33);
-            syntax->function->parameters = NULL;
+            syntax->function->arguments = NULL;
             syntax->function->root_block = NULL;
             break;
         }
@@ -109,6 +135,13 @@ Syntax * default_syntax_new(SyntaxType type)
             syntax->top_level->definitions = NULL;
             break;
         }
+        case VARIABLE_TYPE:
+        {
+            syntax->variable_type = (VariableType *)malloc(sizeof(VariableType));
+            syntax->variable_type->name = string_new(33);
+            syntax->variable_type->type = INT;
+            break;
+        }
         default: break;
     }
     return syntax;
@@ -116,107 +149,176 @@ Syntax * default_syntax_new(SyntaxType type)
 
 void default_syntax_delete(Syntax * syntax)
 {
-
+    switch(syntax->type)
+    {
+        case IMMEDIATE:
+        {
+            break;
+        }
+        case VARIABLE:
+        {
+            break;
+        }
+        case UNARY_EXPRESSION:
+        {
+            break;
+        }
+        case BINARY_EXPRESSION:
+        {
+            break;
+        }
+        case BLOCK:
+        {
+            break;
+        }
+        case IF_STATEMENT:
+        {
+            break;
+        }
+        case RETURN_STATEMENT:
+        {
+            break;
+        }
+        case FUNCTION:
+        {
+            break;
+        }
+        case FUNCTION_CALL:
+        {
+            break;
+        }
+        case FUNCTION_ARGUMENTS:
+        {
+            break;
+        }
+        case ASSIGNMENT:
+        {
+            break;
+        }
+        case WHILE_SYNTAX:
+        {
+            break;
+        }
+        case TOP_LEVEL:
+        {
+            break;
+        }
+        default: break;
+    }
 }
 
-Syntax * syntax_new(SyntaxType type)
+
+
+void print_syntax_depth(Syntax * syntax, int depth)
 {
-    return default_syntax_new(type);
-}
-
-void syntax_delete(Syntax * syntax)
-{
-    default_syntax_delete(syntax);
-    return;
-}
-
-
-
-/*
-Syntax * create_string_node(int type, char string_value[128])
-{
-    Syntax * node = (TreeNode *)malloc(sizeof(TreeNode));
-    node->type = type;
-    strcpy(node->value.string_value, string_value);
-    node->lineno = yylineno;
-    node->next = NULL;
-    node->upper_layer = NULL;
-    node->lower_layer = NULL;
-    return node;
-}
-
-Syntax * create_int_node(int type, int int_value)
-{
-    Syntax * node = (TreeNode *)malloc(sizeof(TreeNode));
-    node->type = type;
-    node->value.int_value = int_value;
-    node->lineno = yylineno;
-    node->next = NULL;
-    node->upper_layer = NULL;
-    node->lower_layer = NULL;
-    return node;
-}
-
-
-void traverse(Syntax * node, int depth)
-{
-    if(node == NULL)
+    if(syntax == NULL)
         return;
-    
-    Syntax * temp = node;
-    while(temp != NULL)
-    {
-        print_node(temp, depth);
-        traverse(temp->lower_layer, depth + 2);
-        temp = temp->next;
-    }
-    
-}
 
-void print_node(Syntax * node, int depth)
-{
-    for(int i = 0;i < depth; i++)
-        putchar(' ');
-    
-    switch(node->type)
+    switch(syntax->type)
     {
-    case INTEGER:
-        printf("%d \n", node->value.int_value);
-        break;
-    default:
-        printf("%s \n", node->value.string_value);
-    }    
-}
-
-Syntax * reduce(char name[128], int count, ...)
-{
-    Syntax * upper_layer = create_string_node(NON_TERMINAL, name);
-    va_list argp;
-    va_start(argp, count);
-    Syntax * head = NULL;
-    Syntax * temp = NULL;
-    
-    Syntax * cur = NULL;
-    for(int i = 0; i < count;i ++)
-    {
-        cur = va_arg(argp, Syntax *);
-        if(cur == NULL)
-            continue;
+        case IMMEDIATE:
+        {
+            PRINT_SPACE(depth)
+            printf("Immediate : %d\n", syntax->immediate->value);
+            break;
+        }
+        case VARIABLE:
+        {
+            PRINT_SPACE(depth)
+            printf("Variable : %s\n", syntax->variable->name);
+            break;
+        }
+        case UNARY_EXPRESSION:
+        {
+            PRINT_SPACE(depth)
+            printf("UnaryExpression : type %d\n", (int) syntax->unary_expression->type);
+            print_syntax_depth(syntax->unary_expression->expression, depth + 2);
+            break;
+        }
+        case BINARY_EXPRESSION:
+        {
+            PRINT_SPACE(depth)
+            printf("BinaryExpression : type %d\n", (int) syntax->binary_expression->type);
+            PRINT_SPACE(depth)
+            printf("Left:\n");
+            print_syntax_depth(syntax->binary_expression->left, depth + 2);
+            PRINT_SPACE(depth)
+            printf("Right:\n");
+            print_syntax_depth(syntax->binary_expression->right, depth + 2);
+            break;
+        }
+        case IF_STATEMENT:
+        {
+            PRINT_SPACE(depth)
+            printf("IfStatement\n");
+            PRINT_SPACE(depth)
+            printf("Condition:\n");
+            print_syntax_depth(syntax->if_statement->condition, depth + 2);
+            PRINT_SPACE(depth)
+            printf("Then:\n");
+            print_syntax_depth(syntax->if_statement->then, depth + 2);
+            break;
+        }
+        case RETURN_STATEMENT:
+        {
+            PRINT_SPACE(depth)
+            printf("ReturnStatement\n");
+            print_syntax_depth(syntax->return_statement->expression, depth + 2);
+            break;
+        }
+        case FUNCTION:
+        {
+            PRINT_SPACE(depth)
+            printf("Function : %s\n", syntax->function->name);
+            PRINT_SPACE(depth)
+            printf("Parameters:\n");
+            for(int i = 0; i < list_length(syntax->function->parameters); ++i)
+                print_syntax_depth((Syntax *)list_get(syntax->function->parameters, i), depth + 2);
             
-        if(temp == NULL)
-        {
-            temp = cur;
-            head = cur;
-            head->upper_layer = upper_layer;
+            print_syntax_depth(syntax->function->root_block, depth + 2);
+            break;
         }
-        else
+        case FUNCTION_CALL:
         {
-            temp->next = cur;
-            temp = temp->next;
-            temp->upper_layer = upper_layer;
+            PRINT_SPACE(depth)
+            printf("FunctionCall : %s\n", syntax->function_call->name);
+            print_syntax_depth(syntax->function_call->arguments, depth + 2);
+            break;
         }
+        case FUNCTION_ARGUMENTS:
+        {
+            for(int i = 0; i < list_length(syntax->function_arguments->arguments); ++i)
+                print_syntax_depth((Syntax *)list_get(syntax->function_arguments->arguments, i), depth + 2);
+            break;
+        }
+        case ASSIGNMENT:
+        {
+            PRINT_SPACE(depth)
+            printf("Assignment : %s\n", syntax->assignment->name);
+            print_syntax_depth(syntax->assignment->expression, depth + 2);
+            break;
+        }
+        case WHILE_SYNTAX:
+        {
+            PRINT_SPACE(depth)
+            printf("WhileStatement\n");
+            PRINT_SPACE(depth)
+            printf("Condition:\n");
+            print_syntax_depth(syntax->while_statement->condition, depth + 2);
+            PRINT_SPACE(depth)
+            printf("Body:\n");
+            print_syntax_depth(syntax->while_statement->body, depth + 2);
+            break;
+        }
+        case TOP_LEVEL:
+        {
+            PRINT_SPACE(depth)
+            printf("TopLevel\n");
+            for(int i = 0; i < list_length(syntax->top_level->definitions); ++i)
+                print_syntax_depth((Syntax *)list_get(syntax->top_level->definitions, i), depth + 2);
+            
+            break;
+        }
+        default: printf("Error!Undefined type!\n"); break;
     }
-    upper_layer->lower_layer = head;
-    va_end(argp);
-    return upper_layer;
-}*/
+}
