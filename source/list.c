@@ -54,6 +54,12 @@ void list_prepend(List *list, void *item)
     list->items[0] = item;
 }
 
+void list_append_list(List *dest, List *source)
+{
+    for(int i = 0;i < list_length(source); ++i)
+        list_append(dest, list_get(source, i));
+}
+
 
 /* Remove the last item from the list, and return it.
  */
