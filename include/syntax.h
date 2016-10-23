@@ -11,18 +11,22 @@ typedef enum
 {
     IMMEDIATE,
     VARIABLE,
+    VARIABLE_TYPE,
+    VARIABLE_DECLARATION,
+    ARRAY,
+    ARRAY_DECLARATION,
+    STRUCT_DECLARATION,
     UNARY_EXPRESSION,
     BINARY_EXPRESSION,
     BLOCK,
     IF_STATEMENT,
     RETURN_STATEMENT,
-    FUNCTION,
+    FUNCTION_DECLARATION,
     FUNCTION_CALL,
     FUNCTION_ARGUMENTS,
     ASSIGNMENT,
     WHILE_SYNTAX,
-    TOP_LEVEL,
-    VARIABLE_TYPE
+    TOP_LEVEL
 } SyntaxType;
 
 typedef enum
@@ -30,8 +34,7 @@ typedef enum
     VOID,
     INT,
     FLOAT,
-    ARRAY,
-    STRUCTURE
+    STRUCT
 } Type;
 
 typedef enum 
@@ -57,17 +60,41 @@ typedef struct Immediate
     int value; 
 } Immediate;
 
-typedef struct Variable 
-{
-    Syntax *type;
-    char *name;
-} Variable;
-
 typedef struct VariableType 
 {
     Type type;
     char *name;
 } VariableType;
+
+typedef struct VariableDeclaration
+{
+    Syntax *type;
+    char *name;
+} VariableDeclaration;
+
+typedef struct Variable
+{
+    char *name;
+} Variable;
+
+typedef struct ArrayDeclaration
+{
+    Syntax *type;
+    char *name;
+    int length;
+} ArrayDeclaration;
+
+typedef struct Array
+{
+    char *name;
+    int index;
+} Array;
+
+typedef struct StructDeclaration
+{
+    char *name;
+    Syntax *block;
+} StructDeclaration;
 
 typedef struct UnaryExpression 
 {
@@ -81,6 +108,14 @@ typedef struct BinaryExpression
     Syntax *left;
     Syntax *right;
 } BinaryExpression;
+
+typedef struct FunctionDeclaration
+{
+    Syntax *type;
+    char *name;
+    Syntax *arguments;
+    Syntax *block;
+} FunctionDeclaration;
 
 typedef struct FunctionArguments 
 { 
@@ -121,14 +156,6 @@ typedef struct Block
     List *statements; 
 } Block;
 
-typedef struct Function 
-{
-    Syntax *type;
-    char *name;
-    Syntax *arguments;
-    Syntax *root_block;
-} Function;
-
 typedef struct Parameter 
 {
     // TODO: once we have other types, we will need to store type here.
@@ -147,7 +174,11 @@ struct _Syntax
     {
         Immediate *immediate;
         Variable *variable;
+        VariableDeclaration *variable_declaration;
         VariableType *variable_type;
+        Array *array;
+        ArrayDeclaration *array_declaration;
+        StructDeclaration *struct_declaration;
         UnaryExpression *unary_expression;
         BinaryExpression *binary_expression;
         Assignment *assignment;
@@ -157,13 +188,14 @@ struct _Syntax
         IfStatement *if_statement;
         WhileStatement *while_statement;
         Block *block;
-        Function *function;
+        FunctionDeclaration *function_declaration;
         TopLevel *top_level;
     };
 };
 
 Syntax * syntax_new(SyntaxType type);
-void syntax_delete(Syntax * syntax);
+void syntax_delete(Syntax *syntax);
+void syntax_block_merge(Syntax *dest, Syntax *source);
 void print_syntax(Syntax * syntax);
 
 
