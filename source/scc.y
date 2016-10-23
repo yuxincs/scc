@@ -85,17 +85,17 @@ statement_list:
         ;
 
 statement:
-        variable_definition_statement
+        variable_declaration_statement
         {
             $$ = $1;
         }
         |
-        struct_definition_statement
+        struct_declaration_statement
         {
             $$ = $1;
         }
         |
-        function_definition_statement
+        function_declaration_statement
         {
             $$ = $1;
         }
@@ -105,17 +105,24 @@ type:
         BASIC_TYPE
         {
             Syntax * syntax = syntax_new(VARIABLE_TYPE);
-            syntax->variable_type->type = 
+            if(strcmp($1, "int") == 0)
+                syntax->variable_type->type = INT;
+            else if(strcmp($1, "float") == 0)
+                syntax->variable_type->type = FLOAT;
+            $$ = syntax;
         }
         |
         STRUCT IDENTIFIER
         {
-
+            Syntax * syntax = syntax_new(VARIABLE_TYPE);
+            syntax->variable_type->type = STRUCT;
+            strcpy(syntax->variable_type->name, $2);
+            $$ = syntax;
         }
         ;
 
-variable_definition_statement:
-        type variable_definition_list ';'
+variable_declaration_statement:
+        type variable_declaration_list ';'
         {
             Syntax * syntax = $2;
             for(int i = 0;i < list_length(syntax->block->statements); ++i)
@@ -127,28 +134,44 @@ variable_definition_statement:
         }
         ;
 
-variable_definition_list:
-        variable_definition ',' variable_definition_list
+variable_declaration_list:
+        variable_declaration ',' variable_declaration_list
         {
+            Syntax * variable = $1;
             Syntax * syntax = $3;
-            list_prepend(syntax->block_statements, (void *)$1);
+            if(variable->type == BLOCK)
+            {
+                list_append_list(variable)
+            }
+            else
+            {
+                list_prepend(syntax->block->statements, (void *) variable);
+            }
+            
             $$ = syntax;
         }
         |
-        variable_definition
+        variable_declaration
         {
-            Syntax * syntax = syntax_new(BLOCK);
-            syntax->block->statements = list_new();
-            list_prepend(syntax->block_statements, (void *)$1);
+            Syntax * variable = $1;
+            if(variable->type == BLOCK)
+                $$ = variable;
+            else
+            {
+                Syntax * syntax = syntax_new(BLOCK);
+                syntax->block->statements = list_new();
+                list_prepend(syntax->block_statements, (void *)$1);
+            }
+            
             $$ = syntax;
         }
         ;
 
-variable_definition:
+variable_declaration:
         IDENTIFIER
         {
-            Syntax * syntax = syntax_new(VARIABLE);
-            strcpy(syntax->variable->name, $1);
+            Syntax * syntax = syntax_new(VARIABLE_DECLARATION);
+            strcpy(syntax->variable_declaration->name, $1);
             $$ = syntax;
         }
         |
@@ -156,8 +179,8 @@ variable_definition:
         {
             Syntax * block = syntax_new(BLOCK);
             block->block->statements = list_new();
-            Syntax * variable = syntax_new(VARIABLE);
-            strcpy(syntax->variable->name, $1);
+            Syntax * variable = syntax_new(VARIABLE_DECLARATION);
+            strcpy(syntax->variable_declaration->name, $1);
             Syntax * assign = syntax_new(ASSIGNMENT);
             strcpy(assign->assignment->name, $1);
             assign->expression = $3;
@@ -165,9 +188,17 @@ variable_definition:
             list_append(block->block->statements, assign);
             $$ = syntax;
         }
+        |
+        IDENTIFIER '[' INTEGER ']'
+        {
+            Syntax * syntax = syntax_new(ARRAY_DECLARATION);
+            strcpy(syntax->array_declaration->name, $1);
+            syntax->array_declaration->length = $3;
+            $$ = syntax;
+        }
         ;
 
-function_definition_statement:
+function_declaration_statement:
         function_type IDENTIFIER '(' ')' in_block_statement_list
         {
             Syntax * function = syntax_new(FUNCTION);
