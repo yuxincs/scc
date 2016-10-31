@@ -14,25 +14,24 @@ notes                    \/\*.*\*\/
 type                     int|float
 %%
 #[^\n]*                  { /* Discard preprocessor comments. */ }
-const                    { return CONST;}
-else                     { return ELSE;}
-if                       { return IF;}
-while                    { return WHILE;}
-struct                   { return STRUCT;}
-return                   { return RETURN; }
-void                     { return VOID; }
+else                     { return L_ELSE;}
+if                       { return L_IF;}
+while                    { return L_WHILE;}
+struct                   { return L_STRUCT;}
+return                   { return L_RETURN; }
+void                     { return L_VOID; }
 
-{type}                   { yylval.string_value = strdup(yytext); return BASIC_TYPE; }
-{identifier}             { yylval.string_value = strdup(yytext); return IDENTIFIER;}
-{integer}                { yylval.int_value = atoi(yytext); return INTEGER;}
-{float}                  { yylval.float_value = atof(yytext); return FLOAT_NUMBER;}
+{type}                   { yylval.string_value = strdup(yytext); return L_BASIC_TYPE; }
+{identifier}             { yylval.string_value = strdup(yytext); return L_IDENTIFIER;}
+{integer}                { yylval.int_value = atoi(yytext); return L_INTEGER;}
+{float}                  { yylval.float_value = atof(yytext); return L_FLOAT;}
 
-[=][=]                   { return EQUAL;}
-[!][=]                   { return NOT_EQUAL;}
-[<][=]                   { return LESS_OR_EQUAL;}
-[>][=]                   { return GREATER_OR_EQUAL;}
-[|][|]                   { return OR;}
-[&][&]                   { return AND;}
+[=][=]                   { return L_EQUAL;}
+[!][=]                   { return L_NOT_EQUAL;}
+[<][=]                   { return L_LESS_OR_EQUAL;}
+[>][=]                   { return L_GREATER_OR_EQUAL;}
+[|][|]                   { return L_OR;}
+[&][&]                   { return L_AND;}
 [-+\*/#<>=\(\),;\.~!{}]  { return yytext[0];}
 
 {blank}                  { /* Do nothing */  }
