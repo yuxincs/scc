@@ -1,8 +1,8 @@
 #ifndef SCC_SYNTAX_HEADER
 #define SCC_SYNTAX_HEADER
 
-struct _List;
-typedef struct _List List;
+#include "list.h"
+
 struct _Syntax;
 typedef struct _Syntax Syntax;
 
@@ -11,28 +11,31 @@ typedef enum
 {
     IMMEDIATE,
     VARIABLE,
-    UNARY_OPERATOR,
-    BINARY_OPERATOR,
+    VARIABLE_TYPE,
+    VARIABLE_DECLARATION,
+    ARRAY,
+    ARRAY_DECLARATION,
+    STRUCT_DECLARATION,
+    UNARY_EXPRESSION,
+    BINARY_EXPRESSION,
     BLOCK,
     IF_STATEMENT,
     RETURN_STATEMENT,
-    DEFINE_VAR,
-    FUNCTION,
+    FUNCTION_DECLARATION,
     FUNCTION_CALL,
     FUNCTION_ARGUMENTS,
     ASSIGNMENT,
-    WHILE_SYNTAX,
+    WHILE_STATEMENT,
     TOP_LEVEL
 } SyntaxType;
 
 typedef enum
 {
+    VOID,
     INT,
     FLOAT,
-    DOUBLE,
-    ARRAY,
-    STRUCTURE
-} VariableType;
+    STRUCT
+} Type;
 
 typedef enum 
 { 
@@ -45,20 +48,60 @@ typedef enum
     ADDITION,
     SUBTRACTION,
     MULTIPLICATION,
-    LESS_THAN,
-    LESS_THAN_OR_EQUAL,
+    DIVISION,
+    EQUAL,
+    NOT_EQUAL,
+    GREATER,
+    LESS,
+    GREATER_OR_EQUAL,
+    LESS_OR_EQUAL,
 } BinaryExpressionType;
 
 typedef struct Immediate 
-{ 
-    int value; 
+{
+    Type type;
+    union
+    {
+        int int_value;
+        float float_value;
+    };
 } Immediate;
 
-typedef struct Variable 
+typedef struct VariableType 
 {
-    VariableType type;
+    Type type;
+    char *name;
+} VariableType;
+
+typedef struct VariableDeclaration
+{
+    Syntax *type;
+    char *name;
+} VariableDeclaration;
+
+typedef struct Variable
+{
     char *name;
 } Variable;
+
+typedef struct ArrayDeclaration
+{
+    Syntax *type;
+    char *name;
+    int length;
+} ArrayDeclaration;
+
+typedef struct Array
+{
+    char *name;
+    int index;
+} Array;
+
+typedef struct StructDeclaration
+{
+    char *name;
+    Syntax *block;
+} StructDeclaration;
 
 typedef struct UnaryExpression 
 {
@@ -72,6 +115,14 @@ typedef struct BinaryExpression
     Syntax *left;
     Syntax *right;
 } BinaryExpression;
+
+typedef struct FunctionDeclaration
+{
+    Syntax *type;
+    char *name;
+    Syntax *arguments;
+    Syntax *block;
+} FunctionDeclaration;
 
 typedef struct FunctionArguments 
 { 
@@ -93,14 +144,8 @@ typedef struct Assignment
 typedef struct IfStatement 
 {
     Syntax *condition;
-    Syntax *then;
+    Syntax *body;
 } IfStatement;
-
-typedef struct DefineVarStatement 
-{
-    char *name;
-    Syntax *init_value;
-} DefineVarStatement;
 
 typedef struct WhileStatement 
 {
@@ -118,13 +163,6 @@ typedef struct Block
     List *statements; 
 } Block;
 
-typedef struct Function 
-{
-    char *name;
-    List *parameters;
-    Syntax *root_block;
-} Function;
-
 typedef struct Parameter 
 {
     // TODO: once we have other types, we will need to store type here.
@@ -133,7 +171,7 @@ typedef struct Parameter
 
 typedef struct TopLevel 
 { 
-    List *declarations; 
+    List *statements; 
 } TopLevel;
 
 struct _Syntax
@@ -143,6 +181,11 @@ struct _Syntax
     {
         Immediate *immediate;
         Variable *variable;
+        VariableDeclaration *variable_declaration;
+        VariableType *variable_type;
+        Array *array;
+        ArrayDeclaration *array_declaration;
+        StructDeclaration *struct_declaration;
         UnaryExpression *unary_expression;
         BinaryExpression *binary_expression;
         Assignment *assignment;
@@ -150,14 +193,16 @@ struct _Syntax
         FunctionArguments *function_arguments;
         FunctionCall *function_call;
         IfStatement *if_statement;
-        DefineVarStatement *define_var_statement;
         WhileStatement *while_statement;
         Block *block;
-        Function *function;
+        FunctionDeclaration *function_declaration;
         TopLevel *top_level;
     };
 };
 
+Syntax * syntax_new(SyntaxType type);
+void syntax_delete(Syntax *syntax);
+void print_syntax(Syntax * syntax);
 
 
 #endif

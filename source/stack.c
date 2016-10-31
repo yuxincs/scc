@@ -4,7 +4,8 @@
 #include <stdbool.h>
 #include "stack.h"
 
-Stack *stack_create() {
+Stack *stack_new() 
+{
     Stack *stack = malloc(sizeof(Stack));
     stack->size = 0;
     stack->content = 0;
@@ -12,14 +13,16 @@ Stack *stack_create() {
     return stack;
 }
 
-void stack_free(Stack *stack) {
+void stack_delete(Stack *stack) 
+{
     if (stack->size > 0) {
         free(stack->content);
     }
     free(stack);
 }
 
-void stack_push(Stack *stack, void *item) {
+void stack_push(Stack *stack, void *item) 
+{
     stack->size++;
 
     // We expand the memory allocated by one word, then write the new
@@ -29,7 +32,8 @@ void stack_push(Stack *stack, void *item) {
     stack->content[stack->size - 1] = item;
 }
 
-void *stack_pop(Stack *stack) {
+void *stack_pop(Stack *stack) 
+{
     assert(stack->size >= 1);
     stack->size--;
 
@@ -39,7 +43,8 @@ void *stack_pop(Stack *stack) {
     return item;
 }
 
-void *stack_peek(Stack *stack) {
+void *stack_peek(Stack *stack) 
+{
     assert(stack->size >= 1);
 
     return stack->content[stack->size - 1];
