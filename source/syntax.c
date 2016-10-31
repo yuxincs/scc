@@ -145,12 +145,6 @@ Syntax * default_syntax_new(SyntaxType type)
             syntax->function_call->arguments = NULL;
             break;
         }
-        case FUNCTION_ARGUMENTS:
-        {
-            syntax->function_arguments = (FunctionArguments *)malloc(sizeof(FunctionArguments));
-            syntax->function_arguments->arguments = NULL;
-            break;
-        }
         case ASSIGNMENT:
         {
             syntax->assignment = (Assignment *)malloc(sizeof(Assignment));
@@ -235,10 +229,6 @@ void default_syntax_delete(Syntax * syntax)
         case FUNCTION_CALL:
         {
            
-        }
-        case FUNCTION_ARGUMENTS:
-        {
-            
         }
         case ASSIGNMENT:
         {
@@ -373,12 +363,6 @@ void print_syntax_depth(Syntax * syntax, int depth)
             PRINT_SPACE(depth)
             printf("FunctionCall : %s\n", syntax->function_call->name);
             print_syntax_depth(syntax->function_call->arguments, depth + 2);
-            break;
-        }
-        case FUNCTION_ARGUMENTS:
-        {
-            for(int i = 0; i < list_length(syntax->function_arguments->arguments); ++i)
-                print_syntax_depth((Syntax *)list_get(syntax->function_arguments->arguments, i), depth + 2);
             break;
         }
         case ASSIGNMENT:
