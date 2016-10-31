@@ -251,7 +251,11 @@ void default_syntax_delete(Syntax * syntax)
 void print_syntax_depth(Syntax * syntax, int depth)
 {
     if(syntax == NULL)
+    {
+        PRINT_SPACE(depth)
+        printf("(null)\n");
         return;
+    }
 
     switch(syntax->type)
     {
@@ -287,15 +291,16 @@ void print_syntax_depth(Syntax * syntax, int depth)
         }
         case ARRAY_DECLARATION:
         {
-            print_syntax_depth(syntax->array_declaration->type, depth + 2);
+            
             PRINT_SPACE(depth)
-            printf("Variable : %s\n", syntax->variable->name);
+            printf("ArrayDeclaration : %s Length: %d\n", syntax->array_declaration->name, syntax->array_declaration->length);
+            print_syntax_depth(syntax->array_declaration->type, depth + 2);
             break;
         }
         case ARRAY:
         {
             PRINT_SPACE(depth)
-            printf("Array : %s\n", syntax->array->name);
+            printf("Array : %s index: %d\n", syntax->array->name, syntax->array->index);
             break;
         }
         case STRUCT_DECLARATION:
@@ -362,6 +367,8 @@ void print_syntax_depth(Syntax * syntax, int depth)
         {
             PRINT_SPACE(depth)
             printf("FunctionCall : %s\n", syntax->function_call->name);
+            PRINT_SPACE(depth)
+            printf("Arguments: \n");
             print_syntax_depth(syntax->function_call->arguments, depth + 2);
             break;
         }
