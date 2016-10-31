@@ -23,7 +23,6 @@ typedef enum
     RETURN_STATEMENT,
     FUNCTION_DECLARATION,
     FUNCTION_CALL,
-    FUNCTION_ARGUMENTS,
     ASSIGNMENT,
     WHILE_STATEMENT,
     TOP_LEVEL
@@ -124,11 +123,6 @@ typedef struct FunctionDeclaration
     Syntax *block;
 } FunctionDeclaration;
 
-typedef struct FunctionArguments 
-{ 
-    List *arguments; 
-} FunctionArguments;
-
 typedef struct FunctionCall 
 {
     char *name;
@@ -190,7 +184,6 @@ struct _Syntax
         BinaryExpression *binary_expression;
         Assignment *assignment;
         ReturnStatement *return_statement;
-        FunctionArguments *function_arguments;
         FunctionCall *function_call;
         IfStatement *if_statement;
         WhileStatement *while_statement;
