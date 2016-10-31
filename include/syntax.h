@@ -1,8 +1,8 @@
 #ifndef SCC_SYNTAX_HEADER
 #define SCC_SYNTAX_HEADER
 
-struct _List;
-typedef struct _List List;
+#include "list.h"
+
 struct _Syntax;
 typedef struct _Syntax Syntax;
 
@@ -25,7 +25,7 @@ typedef enum
     FUNCTION_CALL,
     FUNCTION_ARGUMENTS,
     ASSIGNMENT,
-    WHILE_SYNTAX,
+    WHILE_STATEMENT,
     TOP_LEVEL
 } SyntaxType;
 
@@ -49,15 +49,22 @@ typedef enum
     SUBTRACTION,
     MULTIPLICATION,
     DIVISION,
-    GREATER_THAN,
-    GREATER_THAN_OR_EQUAL,
-    LESS_THAN,
-    LESS_THAN_OR_EQUAL,
+    EQUAL,
+    NOT_EQUAL,
+    GREATER,
+    LESS,
+    GREATER_OR_EQUAL,
+    LESS_OR_EQUAL,
 } BinaryExpressionType;
 
 typedef struct Immediate 
-{ 
-    int value; 
+{
+    Type type;
+    union
+    {
+        int int_value;
+        float float_value;
+    };
 } Immediate;
 
 typedef struct VariableType 
@@ -137,7 +144,7 @@ typedef struct Assignment
 typedef struct IfStatement 
 {
     Syntax *condition;
-    Syntax *then;
+    Syntax *body;
 } IfStatement;
 
 typedef struct WhileStatement 
@@ -195,7 +202,6 @@ struct _Syntax
 
 Syntax * syntax_new(SyntaxType type);
 void syntax_delete(Syntax *syntax);
-void syntax_block_merge(Syntax *dest, Syntax *source);
 void print_syntax(Syntax * syntax);
 
 
