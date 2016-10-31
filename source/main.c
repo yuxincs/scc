@@ -4,6 +4,7 @@
 #include "list.h"
 #include "syntax.h"
 #include "scc_yacc.h"
+#include "semantic.h"
 
 extern FILE * yyin;
 // TODO: This method for showing more details about the file content
@@ -49,7 +50,8 @@ int main(int argc, char ** argv)
 
     print_syntax(top_level);
 
-    // TODO: semantic analysis
+    // semantic analysis
+    semantic_analysis(top_level);
 
     // TODO: generate intermidiate code
 
