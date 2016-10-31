@@ -302,17 +302,17 @@ function_declaration_statement:
 argument_list:
         argument ',' argument_list
         {
-            Syntax * arguments = $3;
-            list_prepend(arguments->function_arguments->arguments, (void *)$1);
-            $$ = arguments;
+            Syntax * syntax = $3;
+            list_prepend(syntax->block->statements, (void *)$1);
+            $$ = syntax;
         }
         |
         argument
         {
-            Syntax * arguments = syntax_new(FUNCTION_ARGUMENTS);
-            arguments->function_arguments->arguments = list_new();
-            list_prepend(arguments->function_arguments->arguments, (void *)$1);
-            $$ = arguments;
+            Syntax * syntax = syntax_new(BLOCK);
+            syntax->block->statements = list_new();
+            list_prepend(syntax->block->statements, (void *)$1);
+            $$ = syntax;
         }
         ;
 
