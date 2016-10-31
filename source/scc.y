@@ -172,6 +172,8 @@ variable_declaration_statement:
                 Syntax * syntax = list_get(list->block->statements, i);
                 if(syntax->type == VARIABLE_DECLARATION)
                     syntax->variable_declaration->type = $1;
+                else if(syntax->type == ARRAY_DECLARATION)
+                    syntax->array_declaration->type = $1;
             }
             $$ = list;
         }
@@ -186,6 +188,8 @@ variable_declaration_statement:
                 Syntax * syntax = list_get(list->block->statements, i);
                 if(syntax->type == VARIABLE_DECLARATION)
                     syntax->variable_declaration->type = $1;
+                else if(syntax->type == ARRAY_DECLARATION)
+                    syntax->array_declaration->type = $1;
             }
             $$ = list;
         }
@@ -198,7 +202,6 @@ variable_declaration_list:
             Syntax * syntax = $3;
             if(variable->type == BLOCK)
             {
-                
                 list_append_list(variable->block->statements, syntax->block->statements);
                 list_delete(syntax->block->statements);
                 syntax->block->statements = variable->block->statements;
