@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 #include "list.h"
 #include "syntax.h"
 #include "scc_yacc.h"
@@ -9,6 +11,8 @@ extern FILE * yyin;
 extern char *file_content[1024];
 extern char file_name[1024];
 extern int yyparse();
+
+Syntax * top_level;
 
 void read_file()
 {
@@ -39,9 +43,11 @@ int main(int argc, char ** argv)
 
     // TODO: macro expansion
 
-    // grammer analysis
+    // syntax analysis
     if(yyparse() != 0)
         return 0;
+
+    print_syntax(top_level);
 
     // TODO: semantic analysis
 
