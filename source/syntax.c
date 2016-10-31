@@ -32,18 +32,6 @@ void print_syntax(Syntax * syntax)
     print_syntax_depth(syntax, 0);
 }
 
-void syntax_block_merge(Syntax *dest, Syntax *source)
-{
-    assert(source->type == BLOCK);
-    if(dest->type == BLOCK)
-    {
-        list_append_list(dest->block->statements, source->block->statements);
-    }
-    else
-    
-}
-
-
 
 char * string_new(int size)
 {
@@ -61,7 +49,8 @@ Syntax * default_syntax_new(SyntaxType type)
         case IMMEDIATE:
         {
             syntax->immediate = (Immediate *)malloc(sizeof(Immediate));
-            syntax->immediate->value = 0;
+            syntax->immediate->type = INT;
+            syntax->immediate->int_value = 0;
             break;
         }
         case VARIABLE_TYPE:
@@ -131,7 +120,7 @@ Syntax * default_syntax_new(SyntaxType type)
         {
             syntax->if_statement = (IfStatement *)malloc(sizeof(IfStatement));
             syntax->if_statement->condition = NULL;
-            syntax->if_statement->then = NULL;
+            syntax->if_statement->body = NULL;
             break;
         }
         case RETURN_STATEMENT:
@@ -169,7 +158,7 @@ Syntax * default_syntax_new(SyntaxType type)
             syntax->assignment->expression = NULL;
             break;
         }
-        case WHILE_SYNTAX:
+        case WHILE_STATEMENT:
         {
             syntax->while_statement = (WhileStatement *)malloc(sizeof(WhileStatement));
             syntax->while_statement->condition = NULL;
@@ -179,7 +168,7 @@ Syntax * default_syntax_new(SyntaxType type)
         case TOP_LEVEL:
         {
             syntax->top_level = (TopLevel *)malloc(sizeof(TopLevel));
-            syntax->top_level->definitions = NULL;
+            syntax->top_level->statements = NULL;
             break;
         }
         default: break;
@@ -255,7 +244,7 @@ void default_syntax_delete(Syntax * syntax)
         {
             
         }
-        case WHILE_SYNTAX:
+        case WHILE_STATEMENT:
         {
            
         }
@@ -279,45 +268,50 @@ void print_syntax_depth(Syntax * syntax, int depth)
         case IMMEDIATE:
         {
             PRINT_SPACE(depth)
-            printf("Immediate : %d\n", syntax->immediate->value);
+            if(syntax->immediate->type == INT)
+                printf("Immediate : %d\n", syntax->immediate->int_value);
+            else if(syntax->immediate->type == FLOAT)
+                printf("Immediate : %f\n", syntax->immediate->float_value);
+            else
+                printf("Immediate Type Error!\n");
             break;
         }
         case VARIABLE_TYPE:
         {
             PRINT_SPACE(depth)
-            printf("VariableType : %d %s ", (int)syntax->varibale_type->type, syntax->varibale_type->name);
+            printf("VariableType : %d %s\n", (int)syntax->variable_type->type, syntax->variable_type->name);
             break;
         }
         case VARIABLE_DECLARATION:
         {
             PRINT_SPACE(depth)
-            printf("VariableDeclaration : %s", syntax->variable_declaration->name);
+            printf("VariableDeclaration : %s\n", syntax->variable_declaration->name);
             print_syntax_depth(syntax->variable_declaration->type, depth + 2);
             break;
         }
         case VARIABLE:
         {
             PRINT_SPACE(depth)
-            printf("Variable : %s", syntax->variable->name);
+            printf("Variable : %s\n", syntax->variable->name);
             break;
         }
         case ARRAY_DECLARATION:
         {
             print_syntax_depth(syntax->array_declaration->type, depth + 2);
             PRINT_SPACE(depth)
-            printf("Variable : %s", syntax->variable->name);
+            printf("Variable : %s\n", syntax->variable->name);
             break;
         }
         case ARRAY:
         {
             PRINT_SPACE(depth)
-            printf("Array : %s", syntax->array->name);
+            printf("Array : %s\n", syntax->array->name);
             break;
         }
         case STRUCT_DECLARATION:
         {
             PRINT_SPACE(depth)
-            printf("StructDeclaration : %s", syntax->struct_declaration->name);
+            printf("StructDeclaration : %s\n", syntax->struct_declaration->name);
             print_syntax_depth(syntax->struct_declaration->block, depth + 2);
             break;
         }
@@ -349,7 +343,7 @@ void print_syntax_depth(Syntax * syntax, int depth)
             print_syntax_depth(syntax->if_statement->condition, depth + 2);
             PRINT_SPACE(depth)
             printf("Then:\n");
-            print_syntax_depth(syntax->if_statement->then, depth + 2);
+            print_syntax_depth(syntax->if_statement->body, depth + 2);
             break;
         }
         case RETURN_STATEMENT:
@@ -363,8 +357,14 @@ void print_syntax_depth(Syntax * syntax, int depth)
         {
             PRINT_SPACE(depth)
             printf("FunctionDeclaration : %s\n", syntax->function_declaration->name);
+            PRINT_SPACE(depth)
+            printf("ReturnType: \n");
             print_syntax_depth(syntax->function_declaration->type, depth + 2);
+            PRINT_SPACE(depth)
+            printf("Arguments: \n");
             print_syntax_depth(syntax->function_declaration->arguments, depth + 2);
+            PRINT_SPACE(depth)
+            printf("Body: \n");
             print_syntax_depth(syntax->function_declaration->block, depth + 2);
             break;
         }
@@ -388,7 +388,7 @@ void print_syntax_depth(Syntax * syntax, int depth)
             print_syntax_depth(syntax->assignment->expression, depth + 2);
             break;
         }
-        case WHILE_SYNTAX:
+        case WHILE_STATEMENT:
         {
             PRINT_SPACE(depth)
             printf("WhileStatement\n");
@@ -410,8 +410,8 @@ void print_syntax_depth(Syntax * syntax, int depth)
         {
             PRINT_SPACE(depth)
             printf("TopLevel\n");
-            for(int i = 0; i < list_length(syntax->top_level->definitions); ++i)
-                print_syntax_depth((Syntax *)list_get(syntax->top_level->definitions, i), depth + 2);
+            for(int i = 0; i < list_length(syntax->top_level->statements); ++i)
+                print_syntax_depth((Syntax *)list_get(syntax->top_level->statements, i), depth + 2);
             
             break;
         }
