@@ -18,7 +18,8 @@ int func(int c, int d, float f)
 
 void main()
 {
-    func(2.5, a, 2.2);
+    int aaa[10];
+    func(2.5, a, a[0]);
     return 0;
 }
 
