@@ -1,6 +1,7 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "syntax.h"
 #include "scc_yacc.h"
 %}
