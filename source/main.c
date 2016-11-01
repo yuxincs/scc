@@ -48,8 +48,6 @@ int main(int argc, char ** argv)
     if(yyparse() != 0)
         return 0;
 
-    print_syntax(top_level);
-
     // semantic analysis
     semantic_analysis(top_level);
 
