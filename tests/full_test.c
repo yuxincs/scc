@@ -13,13 +13,15 @@ int func(int c, int d, float f)
     b = c * d + 6 * 7.0;
     h = !f;
 
-    return 0;
+    return c * d;
 }
 
 void main()
 {
     int aaa[10];
+    struct foo bar;
+    bar.a = 1;
     func(2.5, a, a[0]);
-    return 0;
+    return;
 }
 
