@@ -13,8 +13,9 @@ typedef enum
     VARIABLE,
     VARIABLE_TYPE,
     VARIABLE_DECLARATION,
-    ARRAY,
+    ARRAY_VARIABLE,
     ARRAY_DECLARATION,
+    STRUCT_VARIABLE,
     STRUCT_DECLARATION,
     UNARY_EXPRESSION,
     BINARY_EXPRESSION,
@@ -90,17 +91,23 @@ typedef struct ArrayDeclaration
     int length;
 } ArrayDeclaration;
 
-typedef struct Array
+typedef struct ArrayVaraible
 {
     char *name;
     int index;
-} Array;
+} ArrayVariable;
 
 typedef struct StructDeclaration
 {
     char *name;
     Syntax *block;
 } StructDeclaration;
+
+typedef struct StructVariable
+{
+    char *name;
+    char *member;
+} StructVariable;
 
 typedef struct UnaryExpression 
 {
@@ -131,7 +138,7 @@ typedef struct FunctionCall
 
 typedef struct Assignment 
 {
-    char *name;
+    Syntax *dest;
     Syntax *expression;
 } Assignment;
 
@@ -177,8 +184,9 @@ struct _Syntax
         Variable *variable;
         VariableDeclaration *variable_declaration;
         VariableType *variable_type;
-        Array *array;
+        ArrayVariable *array_variable;
         ArrayDeclaration *array_declaration;
+        StructVariable *struct_variable;
         StructDeclaration *struct_declaration;
         UnaryExpression *unary_expression;
         BinaryExpression *binary_expression;
