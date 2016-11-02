@@ -41,7 +41,7 @@
 %type <syntax_value> variable_declaration_list variable_declaration function_declaration_statement
 %type <syntax_value> argument_list argument struct_declaration_statement
 %type <syntax_value> in_block_statement_list expression basic_type struct_type void_type variable_declaration_statement_list
-%type <syntax_value> while_statement if_statement in_block_statement expression_list
+%type <syntax_value> while_statement if_statement in_block_statement expression_list variable
 %left '='
 %left '<'
 %left '+'
@@ -230,35 +230,88 @@ variable_declaration_list:
         ;
 
 variable_declaration:
-        L_IDENTIFIER
-        {
-            Syntax * syntax = syntax_new(VARIABLE_DECLARATION);
-            strcpy(syntax->variable_declaration->name, $1);
-            $$ = syntax;
-        }
-        |
-        L_IDENTIFIER '=' expression
+        variable '=' expression
         {
             Syntax * block = syntax_new(BLOCK);
             block->block->statements = list_new();
-            Syntax * variable = syntax_new(VARIABLE_DECLARATION);
-            strcpy(variable->variable_declaration->name, $1);
+
+
+            Syntax * variable = $1;
+            Syntax * declaration = NULL;
+            if(variable->type == VARIABLE)
+            {
+                declaration = syntax_new(VARIABLE_DECLARATION);
+                    strcpy(declaration->variable_declaration->name, variable->variable->name);
+            }
+            else if (variable->type == ARRAY_VARIABLE)
+            {
+                declaration = syntax_new(ARRAY_DECLARATION);
+                    strcpy(declaration->array_declaration->name, variable->array_variable->name);
+                    declaration->array_declaration->length = variable->array_variable->index;
+            }
+            else
+            {
+                printf("Illegal variable type!\n");
+            }
+
             Syntax * assign = syntax_new(ASSIGNMENT);
-            strcpy(assign->assignment->name, $1);
+            assign->assignment->dest = variable;
             assign->assignment->expression = $3;
-            list_append(block->block->statements, variable);
+            list_append(block->block->statements, declaration);
             list_append(block->block->statements, assign);
             $$ = block;
         }
         |
+        variable
+        {
+            // Convert variable syntax into variable declaration syntax
+            Syntax * variable = $1;
+            Syntax * declaration = NULL;
+            if(variable->type == VARIABLE)
+            {
+                declaration = syntax_new(VARIABLE_DECLARATION);
+                    strcpy(declaration->variable_declaration->name, variable->variable->name);
+            }
+            else if (variable->type == ARRAY_VARIABLE)
+            {
+                declaration = syntax_new(ARRAY_DECLARATION);
+                    strcpy(declaration->array_declaration->name, variable->array_variable->name);
+                    declaration->array_declaration->length = variable->array_variable->index;
+            }
+            else
+            {
+                printf("Illegal variable type!\n");
+            }
+            syntax_delete(variable);
+            $$ = declaration;
+        }
+        ;
+
+variable:
+        L_IDENTIFIER
+        {
+            Syntax * syntax = syntax_new(VARIABLE);
+            strcpy(syntax->variable->name, $1);
+            $$ = syntax;
+        }
+        |
         L_IDENTIFIER '[' L_INTEGER ']'
         {
-            Syntax * syntax = syntax_new(ARRAY_DECLARATION);
-            strcpy(syntax->array_declaration->name, $1);
-            syntax->array_declaration->length = $3;
+            Syntax * syntax = syntax_new(ARRAY_VARIABLE);
+            strcpy(syntax->array_variable->name, $1);
+            syntax->array_variable->index = $3;
+            $$ = syntax;
+        }
+        |
+        L_IDENTIFIER '.' L_IDENTIFIER
+        {
+            Syntax * syntax = syntax_new(STRUCT_VARIABLE);
+            strcpy(syntax->struct_variable->name, $1);
+            strcpy(syntax->struct_variable->member, $3);
             $$ = syntax;
         }
         ;
+
 
 function_declaration_statement:
         basic_type L_IDENTIFIER '(' ')' '{' in_block_statement_list '}'
@@ -371,19 +424,9 @@ expression:
             $$ = syntax;
         }
         |
-        L_IDENTIFIER
+        variable
         {
-            Syntax * syntax = syntax_new(VARIABLE);
-            strcpy(syntax->variable->name, $1);
-            $$ = syntax;
-        }
-        |
-        L_IDENTIFIER '[' L_INTEGER ']'
-        {
-            Syntax * syntax = syntax_new(ARRAY);
-            strcpy(syntax->array->name, $1);
-            
-            $$ = syntax;
+            $$ = $1;
         }
         |
         expression '+' expression
@@ -533,10 +576,10 @@ in_block_statement:
             $$ = $1;
         }
         |
-        L_IDENTIFIER '=' expression ';'
+        variable '=' expression ';'
         {
             Syntax * syntax = syntax_new(ASSIGNMENT);
-            strcpy(syntax->assignment->name, $1);
+            syntax->assignment->dest = $1;
             syntax->assignment->expression = $3;
             $$ = syntax;
         }
@@ -560,6 +603,12 @@ in_block_statement:
         {
             Syntax * syntax = syntax_new(RETURN_STATEMENT);
             syntax->return_statement->expression = $2;
+            $$ = syntax;
+        }
+        |
+        L_RETURN ';'
+        {
+            Syntax * syntax = syntax_new(RETURN_STATEMENT);
             $$ = syntax;
         }
         ;
