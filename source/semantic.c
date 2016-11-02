@@ -27,24 +27,28 @@ void semantic_analysis(Syntax * syntax)
         }
         case VARIABLE_DECLARATION:
         {
+            // insert into symbol table
             printf("VariableDeclaration : %s\n", syntax->variable_declaration->name);
             semantic_analysis(syntax->variable_declaration->type);
             break;
         }
         case VARIABLE:
         {
+            // check the symbol table
             printf("Variable : %s\n", syntax->variable->name);
             break;
         }
         case ARRAY_DECLARATION:
         {
+            // insert into symbol table
             printf("ArrayDeclaration : %s Length: %d\n", syntax->array_declaration->name, syntax->array_declaration->length);
             semantic_analysis(syntax->array_declaration->type);
             break;
         }
-        case ARRAY:
+        case ARRAY_VARIABLE:
         {
-            printf("Array : %s index: %d\n", syntax->array->name, syntax->array->index);
+            // check the symbol table
+            printf("Array : %s index: %d\n", syntax->array_variable->name, syntax->array_variable->index);
             break;
         }
         case STRUCT_DECLARATION:
@@ -108,7 +112,8 @@ void semantic_analysis(Syntax * syntax)
         }
         case ASSIGNMENT:
         {
-            printf("Assignment : %s\n", syntax->assignment->name);
+            printf("Assignment :\n");
+            semantic_analysis(syntax->assignment->dest);
             semantic_analysis(syntax->assignment->expression);
             break;
         }
