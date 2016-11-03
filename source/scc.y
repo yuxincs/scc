@@ -241,13 +241,13 @@ variable_declaration:
             if(variable->type == VARIABLE)
             {
                 declaration = syntax_new(VARIABLE_DECLARATION);
-                    strcpy(declaration->variable_declaration->name, variable->variable->name);
+                strcpy(declaration->variable_declaration->name, variable->variable->name);
             }
             else if (variable->type == ARRAY_VARIABLE)
             {
                 declaration = syntax_new(ARRAY_DECLARATION);
-                    strcpy(declaration->array_declaration->name, variable->array_variable->name);
-                    declaration->array_declaration->length = variable->array_variable->index;
+                strcpy(declaration->array_declaration->name, variable->array_variable->name);
+                declaration->array_declaration->length = variable->array_variable->index;
             }
             else
             {
