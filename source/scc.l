@@ -11,7 +11,7 @@ float                        {integer}\.[0-9]+
 letter                       [a-zA-Z]
 identifier                   {letter}([0-9]|{letter}|_)*
 blank                        [\t\n\x0B\f\r\x20]+
-notes                        \/\*.*\*\/
+notes                        \/\*.*\*\/|\/\/.*
 type                         int|float
 %%
 #[^\n]*                      { /* Discard preprocessor comments. */ }
