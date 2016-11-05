@@ -4,6 +4,7 @@
     #include <stdbool.h>
     #include <string.h>
     #include <stdarg.h>
+    #include "commonutils.h"
     #include "list.h"
     #include "syntax.h"
 
@@ -17,8 +18,6 @@
     // top level syntax definition exists in main.c
     extern Syntax * top_level;
     
-    char file_name[1024];
-    char *file_content[1024];
     int yyerror(char * msg);
     #define PAUSE system("read -n1 -p ' ' key");
     
@@ -653,16 +652,6 @@ while_statement:
 %%
 int yyerror(char *msg)
 {
-    printf("\033[1m%s [%d] \033[1;31merror:\033[0m\033[1m %s in\033[0m\n", file_name, yylineno, msg);
-    printf("%s\n", file_content[yylineno -1 ]);
-    int index = strstr(file_content[yylineno - 1], yytext) - file_content[yylineno - 1];
-    
-    printf("\033[1;32m");
-    for(int i = 0;i < index;i ++)
-        putchar(' ');
-    for(int j = 0;j < strlen(yytext);j ++)
-        putchar('^');
-    putchar('\n');
-    printf("\033[0m");
+    print_error(msg, yytext, yylineno);
     return 0;
 }
