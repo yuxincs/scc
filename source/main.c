@@ -9,8 +9,8 @@
 extern FILE * yyin;
 // TODO: This method for showing more details about the file content
 // when encountering errors is not very neat and needed to be optimized
-extern char *file_content[1024];
-extern char file_name[1024];
+char *file_content[1024];
+char file_name[1024];
 extern int yyparse();
 
 Syntax * top_level;
@@ -48,12 +48,15 @@ int main(int argc, char ** argv)
     if(yyparse() != 0)
         return 0;
 
+    //print_syntax(top_level);
+
     // semantic analysis
-    semantic_analysis(top_level);
+    if(semantic_analysis(top_level) != 0)
+        return 0;
 
     // TODO: generate intermidiate code
 
-    // TODO: generate objective code from intermidiate code
+    // TODO: generate target code from intermidiate code
     
     printf("\033[1;32mCompile Success!\033[0m\n");
     return 0;
