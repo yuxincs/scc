@@ -164,12 +164,6 @@ typedef struct Block
     List *statements; 
 } Block;
 
-typedef struct Parameter 
-{
-    // TODO: once we have other types, we will need to store type here.
-    char *name;
-} Parameter;
-
 typedef struct TopLevel 
 { 
     List *statements; 
@@ -178,6 +172,7 @@ typedef struct TopLevel
 struct _Syntax
 {
     SyntaxType type;
+    int lineno;
     union 
     {
         Immediate *immediate;
