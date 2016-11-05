@@ -145,17 +145,17 @@ struct_declaration_statement:
 variable_declaration_statement_list:
         variable_declaration_statement variable_declaration_statement_list
         {
+            Syntax * statement = $1;
             Syntax * statement_list = $2;
-            list_prepend(statement_list->block->statements, $1);
-            $$ = statement_list;
+            list_append_list(statement->block->statements, statement_list->block->statements);
+            list_delete(statement_list->block->statements);
+            syntax_delete(statement_list);
+            $$ = statement;
         }
         |
         variable_declaration_statement
         {
-            Syntax * block = syntax_new(BLOCK);
-            block->block->statements = list_new();
-            list_append(block->block->statements, $1);
-            $$ = block;
+            $$ = $1;
         }
         ;
 
