@@ -7,6 +7,11 @@
 
 SymbolTable * symbol_table = NULL;
 
+Syntax * get_expression_type(Syntax * syntax)
+{
+    return NULL;
+}
+
 bool semantic_analysis(Syntax * syntax)
 {
     static int cur_level = 0;
@@ -171,7 +176,7 @@ bool semantic_analysis(Syntax * syntax)
                     sprintf(struct_name, "struct %s", previous_symbol->declaration->variable_declaration->type->variable_type->name);
                     Symbol * struct_symbol = get_symbol(symbol_table, struct_name);
                     
-                    // if the variable's type is incomplete abandon the check
+                    // if the variable's type is incomplete, abandon the check
                     if(struct_symbol == NULL)
                         break;
 
@@ -180,8 +185,8 @@ bool semantic_analysis(Syntax * syntax)
                     for(int i = 0; i < list_length(block->block->statements); ++i)
                     {
                         Syntax * member = list_get(block->block->statements, i);
-                        if((member->type == VARIABLE_DECLARATION && strcmp(member->variable_declaration->name, syntax->struct_variable->name) == 0) ||
-                           (member->type == ARRAY_DECLARATION && strcmp(member->array_declaration->name, syntax->struct_variable->name) == 0))
+                        if((member->type == VARIABLE_DECLARATION && strcmp(member->variable_declaration->name, syntax->struct_variable->member) == 0) ||
+                           (member->type == ARRAY_DECLARATION && strcmp(member->array_declaration->name, syntax->struct_variable->member) == 0))
                         {
                             has_member = true;
                             break;
@@ -209,85 +214,98 @@ bool semantic_analysis(Syntax * syntax)
         case UNARY_EXPRESSION:
         {
             // type conflicts
-            printf("UnaryExpression : type %d\n", (int) syntax->unary_expression->type);
-            semantic_analysis(syntax->unary_expression->expression);
+            //semantic_analysis(syntax->unary_expression->expression);
             break;
         }
         case BINARY_EXPRESSION:
         {
             // type conflicts
-            printf("BinaryExpression : type %d\n", (int) syntax->binary_expression->type);
-            printf("Left:\n");
-            semantic_analysis(syntax->binary_expression->left);
-            printf("Right:\n");
-            semantic_analysis(syntax->binary_expression->right);
+            //semantic_analysis(syntax->binary_expression->left);
+            //semantic_analysis(syntax->binary_expression->right);
             break;
         }
         case IF_STATEMENT:
         {
             // condition type
-            printf("IfStatement\n");
-            printf("Condition:\n");
             semantic_analysis(syntax->if_statement->condition);
-    
-            printf("Then:\n");
+            ENTER_SCOPE(syntax);
             semantic_analysis(syntax->if_statement->body);
+            LEAVE_SCOPE();
             break;
         }
         case RETURN_STATEMENT:
         {
             // return type doesn't match the function type
-            printf("ReturnStatement\n");
-            semantic_analysis(syntax->return_statement->expression);
+            //semantic_analysis(syntax->return_statement->expression);
             break;
         }
         case FUNCTION_DECLARATION:
         {
-            // duplicate declaration
-            printf("FunctionDeclaration : %s\n", syntax->function_declaration->name);
-           
-            printf("ReturnType: \n");
-            semantic_analysis(syntax->function_declaration->type);
-            
-            printf("Arguments: \n");
+            Symbol * previous_symbol = get_symbol(symbol_table, syntax->function_declaration->name);
+         
+            if(previous_symbol == NULL)
+            {
+                Symbol *symbol = symbol_new();
+                symbol->level = cur_level;
+                strcpy(symbol->name, syntax->function_declaration->name);
+                symbol->declaration = syntax;
+                insert_symbol(symbol_table, symbol);
+            }
+            // redefinition check
+            else
+            {
+                char buf[50];
+                sprintf(buf, "Redefinition of '%s'", syntax->function_declaration->name);
+                print_error(buf, syntax->function_declaration->name, syntax->lineno);
+                print_note("Previous definition is here", syntax->function_declaration->name, previous_symbol->declaration->lineno);
+                is_correct = false;
+            }
+            ENTER_SCOPE(syntax);
             semantic_analysis(syntax->function_declaration->arguments);
-           
-            printf("Body: \n");
             semantic_analysis(syntax->function_declaration->block);
+            LEAVE_SCOPE();
             break;
         }
         case FUNCTION_CALL:
         {
+            Symbol * previous_symbol = get_symbol(symbol_table, syntax->function_call->name);
+
             // undefined function call
-
+            if(previous_symbol == NULL)
+            {
+                char buf[50];
+                sprintf(buf, "Undefined function name '%s'", syntax->function_call->name);
+                print_error(buf, syntax->function_call->name, syntax->lineno);
+                is_correct = false;
+            }
             // '()' used on non-function
-
+            else if(previous_symbol->declaration->type != FUNCTION_DECLARATION)
+            {
+                char buf[50];
+                sprintf(buf, "'()' used on non-function '%s'", syntax->function_call->name);
+                print_error(buf, syntax->function_call->name, syntax->lineno);
+                is_correct = false;
+            }
             // arguments don't match
 
-            
-            printf("FunctionCall : %s\n", syntax->function_call->name);
-           
-            printf("Arguments: \n");
-            semantic_analysis(syntax->function_call->arguments);
+            //semantic_analysis(syntax->function_call->arguments);
             break;
         }
         case ASSIGNMENT:
         {
             // inconsistent type
-            printf("Assignment :\n");
             semantic_analysis(syntax->assignment->dest);
-            semantic_analysis(syntax->assignment->expression);
+            //semantic_analysis(syntax->assignment->expression);
             break;
         }
         case WHILE_STATEMENT:
         {
             // condition type
-            printf("WhileStatement\n");
-            printf("Condition:\n");
             semantic_analysis(syntax->while_statement->condition);
            
-            printf("Body:\n");
+            ENTER_SCOPE(syntax);
             semantic_analysis(syntax->while_statement->body);
+            LEAVE_SCOPE();
             break;
         }
         case BLOCK:
