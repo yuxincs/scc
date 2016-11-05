@@ -180,21 +180,11 @@ bool semantic_analysis(Syntax * syntax)
                     for(int i = 0; i < list_length(block->block->statements); ++i)
                     {
                         Syntax * member = list_get(block->block->statements, i);
-                        if(member->type == VARIABLE_DECLARATION)
+                        if((member->type == VARIABLE_DECLARATION && strcmp(member->variable_declaration->name, syntax->struct_variable->name) == 0) ||
+                           (member->type == ARRAY_DECLARATION && strcmp(member->array_declaration->name, syntax->struct_variable->name) == 0))
                         {
-                            if(strcmp(member->variable_declaration->name, syntax->struct_variable->name) == 0)
-                            {
-                                has_member = true;
-                                break;
-                            }
-                        }
-                        else if(member->type == ARRAY_DECLARATION)
-                        {
-                            if(strcmp(member->array_declaration->name, syntax->struct_variable->name) == 0)
-                            {
-                                has_member = true;
-                                break;
-                            }
+                            has_member = true;
+                            break;
                         }
                     }
                     if(!has_member)
