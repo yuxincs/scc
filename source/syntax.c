@@ -2,48 +2,30 @@
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
+#include "commonutils.h"
 #include "syntax.h"
 #include "list.h"
 
 #define PRINT_SPACE(x) {for(int i = 0;i < (x); ++i) { putchar(' '); }}
 
+// yylineno exists in scc.y file
+extern int yylineno;
 
 // private functions declarations
-char * string_new(int size);
-Syntax * default_syntax_new(SyntaxType type);
-void default_syntax_delete(Syntax * syntax);
 void print_syntax_depth(Syntax * syntax, int depth);
 
-
-
-Syntax * syntax_new(SyntaxType type)
-{
-    return default_syntax_new(type);
-}
-
-void syntax_delete(Syntax * syntax)
-{
-    default_syntax_delete(syntax);
-    return;
-}
 
 void print_syntax(Syntax * syntax)
 {
     print_syntax_depth(syntax, 0);
 }
 
-
-char * string_new(int size)
-{
-    char * buf = (char *)malloc(sizeof(char) * size);
-    buf[0] = '\0';
-    return buf;
-}
-
-Syntax * default_syntax_new(SyntaxType type)
+Syntax * syntax_new(SyntaxType type)
 {
     Syntax * syntax = (Syntax *)malloc(sizeof(Syntax));
     syntax->type = type;
+    // store the current line number into the syntax
+    syntax->lineno = yylineno;
     switch(type)
     {
         case IMMEDIATE:
@@ -177,7 +159,7 @@ Syntax * default_syntax_new(SyntaxType type)
     return syntax;
 }
 
-void default_syntax_delete(Syntax * syntax)
+void syntax_delete(Syntax * syntax)
 {
     switch(syntax->type)
     {
