@@ -2,9 +2,10 @@
 #define SCC_SEMANTIC_HEADER
 
 #include <stdio.h>
+#include <stdbool.h>
 #include "syntax.h"
 #include "symboltable.h"
 
-int semantic_analysis(Syntax * top_level);
+bool semantic_analysis(Syntax * top_level);
 
 #endif
