@@ -51,7 +51,7 @@ int main(int argc, char ** argv)
     //print_syntax(top_level);
 
     // semantic analysis
-    if(semantic_analysis(top_level) != 0)
+    if(semantic_analysis(top_level) == false)
         return 0;
 
     // TODO: generate intermidiate code
