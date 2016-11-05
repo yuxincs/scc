@@ -3,7 +3,8 @@
 
 #include <stdio.h>
 #include "syntax.h"
+#include "symboltable.h"
 
-void semantic_analysis(Syntax * top_level);
+int semantic_analysis(Syntax * top_level);
 
 #endif
