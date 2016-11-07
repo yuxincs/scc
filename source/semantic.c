@@ -7,8 +7,104 @@
 
 SymbolTable * symbol_table = NULL;
 
-Syntax * get_expression_type(Syntax * syntax)
+void variable_type_to_string(Syntax * type, char * type_string)
 {
+    assert(type->type == VARIABLE_TYPE);
+    char buf[50];
+    if(type->variable_type->type == INT)
+        strcpy(type_string, "int");
+    else if(type->variable_type->type == FLOAT)
+        strcpy(type_string, "float");
+    else if(type->variable_type->type == STRUCT)
+        sprintf(type_string, "struct %s", type->variable_type->name);
+}
+
+bool is_variable_type_equal(Syntax * type1, Syntax * type2)
+{
+    assert(type1 != NULL && type2 != NULL);
+    assert(type1->type == VARIABLE_TYPE && type2->type == VARIABLE_TYPE);
+    bool is_equal = true;
+    if(type1->variable_type->type != type2->variable_type->type)
+        is_equal = false; 
+    else if(type1->variable_type->type == STRUCT && strcmp(type1->variable_type->name, type2->variable_type->name) != 0)
+        is_equal = false;
+    return is_equal;
+}
+
+Syntax * check_expression_type(Syntax * syntax)
+{
+    assert(syntax != NULL);
+    switch(syntax->type)
+    {
+        case IMMEDIATE:
+        {
+            // wrap the immediate's type
+            Syntax * type = syntax_new(VARIABLE_TYPE);
+            type->variable_type->type = syntax->immediate->type;
+            return type;
+        }
+        case VARIABLE:
+        {
+            semantic_analysis(syntax);
+            Symbol * previous_symbol = get_symbol(symbol_table, syntax->variable->name);
+            if(previous_symbol != NULL)
+                return previous_symbol->declaration->variable_declaration->type;
+        }
+        case ARRAY_VARIABLE:
+        {
+            semantic_analysis(syntax);
+            Symbol * previous_symbol = get_symbol(symbol_table, syntax->array_variable->name);
+            if(previous_symbol != NULL)
+                return previous_symbol->declaration->array_declaration->type;
+        }
+        case STRUCT_VARIABLE:
+        {
+            semantic_analysis(syntax);
+            char struct_name[50];
+            sprintf(struct_name, "struct %s", syntax->struct_variable->name);
+            Symbol * previous_symbol = get_symbol(symbol_table, struct_name);
+            assert(previous_symbol != NULL);
+            Syntax * block = previous_symbol->declaration->struct_declaration->block;
+            for(int i = 0; i < list_length(block->block->statements) - 1; ++i)
+            {
+                Syntax * declaration = list_get(block->block->statements, i);
+                if(declaration->type == VARIABLE_DECLARATION)
+                {
+                    if(strcmp(declaration->variable_declaration->name, syntax->struct_variable->member) == 0)
+                    return declaration->variable_declaration->type;
+                }
+                else if(declaration->type == ARRAY_DECLARATION)
+                {
+                    if(strcmp(declaration->array_declaration->name, syntax->struct_variable->member) == 0)
+                    return declaration->array_declaration->type;
+                }
+            }
+            break;
+        }
+        case BINARY_EXPRESSION:
+        {
+            Syntax * type1 = check_expression_type(syntax->binary_expression->left);
+            Syntax * type2 = check_expression_type(syntax->binary_expression->right);
+
+    printf("dsadsada %d dsadsdsa\n", syntax->binary_expression->type);
+            if(type1 != NULL && type2 != NULL)
+            {
+                if(!is_variable_type_equal(type1, type2))
+                {
+                    char buf[50];
+                    sprintf(buf, "Expression type conflicts.");
+                    print_error(buf, NULL, syntax->lineno);   
+                }
+                else
+                    return type1;
+            }
+        }
+        case UNARY_EXPRESSION:
+        {
+            return check_expression_type(syntax->unary_expression->expression);
+        }
+        default: break;
+    }
     return NULL;
 }
 
@@ -214,14 +310,13 @@ bool semantic_analysis(Syntax * syntax)
         case UNARY_EXPRESSION:
         {
             // type conflicts
-            //semantic_analysis(syntax->unary_expression->expression);
+            check_expression_type(syntax);
             break;
         }
         case BINARY_EXPRESSION:
         {
             // type conflicts
-            //semantic_analysis(syntax->binary_expression->left);
-            //semantic_analysis(syntax->binary_expression->right);
+            check_expression_type(syntax);
             break;
         }
         case IF_STATEMENT:
@@ -236,7 +331,21 @@ bool semantic_analysis(Syntax * syntax)
         case RETURN_STATEMENT:
         {
             // return type doesn't match the function type
-            //semantic_analysis(syntax->return_statement->expression);
+            Syntax * type = check_expression_type(syntax->return_statement->expression);
+            if(type != NULL)
+            {
+                if(!is_variable_type_equal(cur_scope->function_declaration->type, type))
+                {
+                    char buf[50];
+                    char return_type[50];
+                    char function_type[50];
+                    variable_type_to_string(type, return_type);
+                    variable_type_to_string(cur_scope->function_declaration->type, function_type);
+                    sprintf(buf, "Return type %s doesn't match the function type %s'", return_type, function_type);
+                    print_error(buf, "return", syntax->lineno);
+                    is_correct = false;
+                }
+            }
             break;
         }
         case FUNCTION_DECLARATION:
@@ -293,16 +402,25 @@ bool semantic_analysis(Syntax * syntax)
         }
         case ASSIGNMENT:
         {
-            // inconsistent type
             semantic_analysis(syntax->assignment->dest);
-            //semantic_analysis(syntax->assignment->expression);
+            // inconsistent type
+            Syntax * expression_type = check_expression_type(syntax->assignment->expression);
+            Syntax * dest_type = check_expression_type(syntax->assignment->dest);
+            if(!is_variable_type_equal(expression_type, dest_type))
+            {
+                char buf[50];
+                sprintf(buf, "Assignment has inconsistent types");
+                print_error(buf, "=", syntax->lineno);
+                is_correct = false;
+            }
             break;
         }
         case WHILE_STATEMENT:
         {
-            // condition type
             semantic_analysis(syntax->while_statement->condition);
-           
+
+            // condition type check
+
             ENTER_SCOPE(syntax);
             semantic_analysis(syntax->while_statement->body);
             LEAVE_SCOPE();
