@@ -31,7 +31,7 @@ int func(int c, int d, float f)
     b[1] = 2;
     // undefine variable 'nono'
     nono[0] = 3;
-    
+    b = a_func(1, 1);
 
     return c * d;
 }
