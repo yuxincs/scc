@@ -428,6 +428,14 @@ expression:
             $$ = $1;
         }
         |
+        L_IDENTIFIER '(' expression_list ')'
+        {
+            Syntax * syntax = syntax_new(FUNCTION_CALL);
+            strcpy(syntax->function_call->name, $1);
+            syntax->function_call->arguments = $3;
+            $$ = syntax;
+        }
+        |
         expression '+' expression
         {
             Syntax * syntax = syntax_new(BINARY_EXPRESSION);
