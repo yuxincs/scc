@@ -21,7 +21,7 @@ int a_func(int a, int a)
 
 int func(int c, int d, float f)
 {
-    int b = 1;
+    int b = 1.0;
     float test_array[10];
     b = c;
     b = c * d + 6 * 7.0;
