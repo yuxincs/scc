@@ -122,7 +122,11 @@ Syntax * check_expression_type(Syntax * syntax)
                 if(!is_variable_type_equal(type1, type2))
                 {
                     char buf[50];
-                    sprintf(buf, "Expression type conflicts.");
+                    char type1_str[50];
+                    char type2_str[50];
+                    variable_type_to_string(type1, type1_str);
+                    variable_type_to_string(type2, type2_str);
+                    sprintf(buf, "Expression type conflicts, expected '%s', has '%s'", type1_str, type2_str);
                     print_error(buf, NULL, syntax->lineno);
                 }
                 else
