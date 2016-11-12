@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <err.h>
+#include <assert.h>
 #include "list.h"
 
 List *list_new(void)
@@ -73,7 +74,11 @@ void *list_pop(List *list)
     return value;
 }
 
-void *list_get(List *list, int index) { return list->items[index]; }
+void *list_get(List *list, int index) 
+{ 
+    assert(index < list->size);
+    return list->items[index]; 
+}
 
 void list_set(List *list, int index, void *value) 
 {
