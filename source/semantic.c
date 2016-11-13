@@ -213,7 +213,6 @@ bool semantic_analysis(Syntax * syntax)
         {
             Symbol * previous_symbol = get_symbol(symbol_table, syntax->array_declaration->name);
 
-            // redefinition check
             if(previous_symbol == NULL)
             {
                 Symbol *symbol = symbol_new();
@@ -222,6 +221,7 @@ bool semantic_analysis(Syntax * syntax)
                 symbol->declaration = syntax;
                 insert_symbol(symbol_table, symbol);
             }
+            // redefinition check
             else
             {
                 char buf[50];
