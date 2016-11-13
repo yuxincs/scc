@@ -338,8 +338,6 @@ function_declaration_statement:
             function->function_declaration->type = $1;
             strcpy(function->function_declaration->name, $2);
             function->function_declaration->block = $6;
-            if($6 == NULL)
-                printf("FUCKYOU");
             $$ = function;
         }
         |
