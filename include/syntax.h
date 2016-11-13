@@ -145,7 +145,8 @@ typedef struct Assignment
 typedef struct IfStatement 
 {
     Syntax *condition;
-    Syntax *body;
+    Syntax *then_body;
+    Syntax *else_body;
 } IfStatement;
 
 typedef struct WhileStatement 
