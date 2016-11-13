@@ -2,8 +2,9 @@
 #include "commonutils.h"
 #include "semantic.h"
 
-#define ENTER_SCOPE(x) { old_scope = cur_scope; cur_level++; cur_scope = x; }
-#define LEAVE_SCOPE() { cur_scope = old_scope; remove_level(symbol_table, cur_level); cur_level--; }
+#define ENTER_SCOPE() { cur_level++; }
+
+#define LEAVE_SCOPE() { remove_level(symbol_table, cur_level); cur_level--; }
 
 SymbolTable * symbol_table = NULL;
 
@@ -25,7 +26,7 @@ bool is_variable_type_equal(Syntax * type1, Syntax * type2)
         return false;
 
     assert(type1->type == VARIABLE_TYPE && type2->type == VARIABLE_TYPE);
-
+    
     bool is_equal = true;
     if(type1->variable_type->type != type2->variable_type->type)
         is_equal = false; 
@@ -147,8 +148,8 @@ Syntax * check_expression_type(Syntax * syntax)
 bool semantic_analysis(Syntax * syntax)
 {
     static int cur_level = 0;
-    static Syntax * cur_scope = NULL;
-    static Syntax * old_scope = NULL;
+    static Syntax * cur_function = NULL;
+    static Syntax * old_function = NULL;
     bool is_correct = true;
 
     if(syntax == NULL)
@@ -279,7 +280,7 @@ bool semantic_analysis(Syntax * syntax)
                 print_note("Previous definition is here", syntax->struct_declaration->name, previous_symbol->declaration->lineno);
                 is_correct = false;
             }
-            ENTER_SCOPE(syntax);
+            ENTER_SCOPE();
             if(!semantic_analysis(syntax->struct_declaration->block))
                 is_correct = false;
             LEAVE_SCOPE();
@@ -359,7 +360,7 @@ bool semantic_analysis(Syntax * syntax)
             // condition type
             if(!semantic_analysis(syntax->if_statement->condition))
                 is_correct = false;
-            ENTER_SCOPE(syntax);
+            ENTER_SCOPE();
             if(!semantic_analysis(syntax->if_statement->body))
                 is_correct = false;
             LEAVE_SCOPE();
@@ -369,13 +370,13 @@ bool semantic_analysis(Syntax * syntax)
         {
             // return type doesn't match the function type
             Syntax * type = check_expression_type(syntax->return_statement->expression);
-            if(!is_variable_type_equal(cur_scope->function_declaration->type, type))
+            if(!is_variable_type_equal(cur_function->function_declaration->type, type))
             {
                 char buf[50];
                 char return_type[50];
                 char function_type[50];
                 variable_type_to_string(type, return_type);
-                variable_type_to_string(cur_scope->function_declaration->type, function_type);
+                variable_type_to_string(cur_function->function_declaration->type, function_type);
                 sprintf(buf, "Return type %s doesn't match the function type %s'", return_type, function_type);
                 print_error(buf, "return", syntax->lineno);
                 is_correct = false;
@@ -403,12 +404,16 @@ bool semantic_analysis(Syntax * syntax)
                 print_note("Previous definition is here", syntax->function_declaration->name, previous_symbol->declaration->lineno);
                 is_correct = false;
             }
-            ENTER_SCOPE(syntax);
+            ENTER_SCOPE();
+            old_function = cur_function;
+            cur_function = syntax;
+
             if(!semantic_analysis(syntax->function_declaration->arguments))
                 is_correct = false;
             if(!semantic_analysis(syntax->function_declaration->block))
                 is_correct = false;
             LEAVE_SCOPE();
+            cur_function = old_function;
             break;
         }
         case FUNCTION_CALL:
@@ -491,7 +496,7 @@ bool semantic_analysis(Syntax * syntax)
                 is_correct = false;
 
             // condition type check
-            ENTER_SCOPE(syntax);
+            ENTER_SCOPE();
             if(!semantic_analysis(syntax->while_statement->body))
                 is_correct = false;
             LEAVE_SCOPE();
@@ -510,16 +515,14 @@ bool semantic_analysis(Syntax * syntax)
         {
             // initialize the symbol table
             symbol_table = new_symbol_table();  
-            cur_scope = syntax;
+            cur_function = syntax;
 
-            printf("TopLevel\n");
             for(int i = 0; i < list_length(syntax->top_level->statements); ++i)
             {
                 if(!semantic_analysis((Syntax *)list_get(syntax->top_level->statements, i)))
                     is_correct = false;
             }
                 
-            
             break;
         }
         default: printf("Error!Undefined type %d!\n", syntax->type); break;
