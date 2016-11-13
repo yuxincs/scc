@@ -171,8 +171,10 @@ void generate_intermediate_code(List * code_list, Syntax * syntax)
             
             char success_label[10];
             char failure_label[10];
+            char end_label[10];
             new_label(success_label);
             new_label(failure_label);
+            
 
             // if code
             Quad * quad = quad_new(binary_type_to_operator(syntax->if_statement->condition->binary_expression->type));
@@ -193,18 +195,30 @@ void generate_intermediate_code(List * code_list, Syntax * syntax)
                
             ENTER_SCOPE();
             generate_intermediate_code(code_list, syntax->if_statement->then_body);
-            quad = quad_new(OP_GOTO);
-            strcpy(quad->result, failure_label);
-            list_append(code_list, quad);
+            if(syntax->if_statement->else_body != NULL)
+            {
+                new_label(end_label);
+                quad = quad_new(OP_GOTO);
+                strcpy(quad->result, end_label);
+                list_append(code_list, quad);
+            }
             LEAVE_SCOPE();
 
+            // failure label
             quad = quad_new(OP_LABEL);
             strcpy(quad->result, failure_label);
             list_append(code_list, quad);
 
-            ENTER_SCOPE();
-            generate_intermediate_code(code_list, syntax->if_statement->else_body);
-            LEAVE_SCOPE();
+            if(syntax->if_statement->else_body != NULL)
+            {
+                ENTER_SCOPE();
+                generate_intermediate_code(code_list, syntax->if_statement->else_body);
+                quad = quad_new(OP_LABEL);
+                strcpy(quad->result, end_label);
+                list_append(code_list, quad);
+                LEAVE_SCOPE();
+            }
+            
             break;
         }
         case RETURN_STATEMENT:
