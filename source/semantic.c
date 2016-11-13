@@ -439,33 +439,53 @@ bool semantic_analysis(Syntax * syntax)
             else
             {
                 // arguments don't match
-                for(int i = 0; i < list_length(previous_symbol->declaration->function_declaration->arguments->block->statements); ++i)
-                {
-                    Syntax * call_type = check_expression_type((Syntax *)list_get(syntax->function_call->arguments->block->statements, i));
-                    Syntax * declaration = (Syntax *)list_get(previous_symbol->declaration->function_declaration->arguments->block->statements, i);
-                    Syntax * declared_type = NULL;
-                    if(declaration->type == VARIABLE_DECLARATION)
-                        declared_type = declaration->variable_declaration->type;
-                    else if(declaration->type == ARRAY_DECLARATION)
-                        declared_type = declaration->array_declaration->type;
+                int declared_number = 0;
+                int call_number = 0;
 
-                    if(call_type == NULL)
-                        is_correct = false;
-                    else
+                if(previous_symbol->declaration->function_declaration->arguments != NULL)
+                    declared_number = list_length(previous_symbol->declaration->function_declaration->arguments->block->statements);
+                if(syntax->function_call->arguments != NULL)
+                    call_number = list_length(syntax->function_call->arguments->block->statements);
+                    
+                if(declared_number != call_number)
+                {
+                    char buf[50];
+                    sprintf(buf, "Function arguments number doesn't match, expected %d, has %d'", declared_number, call_number);
+                    print_error(buf, syntax->function_call->name, syntax->lineno);
+                    is_correct = false;
+                }
+                else if(declared_number != 0)
+                {
+                    for(int i = 0; i < list_length(previous_symbol->declaration->function_declaration->arguments->block->statements); ++i)
                     {
-                        if(!is_variable_type_equal(call_type, declared_type))
-                        {
-                            char buf[50];
-                            char call_type_str[50];
-                            char declared_type_str[50];
-                            variable_type_to_string(call_type, call_type_str);
-                            variable_type_to_string(declared_type, declared_type_str);
-                            sprintf(buf, "Function %d argument type doesn't match, expected '%s', has '%s'", i + 1, declared_type_str, call_type_str);
-                            print_error(buf, syntax->function_call->name, syntax->lineno);
+                        Syntax * call_type = check_expression_type((Syntax *)list_get(syntax->function_call->arguments->block->statements, i));
+                        Syntax * declaration = (Syntax *)list_get(previous_symbol->declaration->function_declaration->arguments->block->statements, i);
+                        Syntax * declared_type = NULL;
+                        if(declaration->type == VARIABLE_DECLARATION)
+                            declared_type = declaration->variable_declaration->type;
+                        else if(declaration->type == ARRAY_DECLARATION)
+                            declared_type = declaration->array_declaration->type;
+
+                        if(call_type == NULL)
                             is_correct = false;
+                        else
+                        {
+                            if(!is_variable_type_equal(call_type, declared_type))
+                            {
+                                char buf[50];
+                                char call_type_str[50];
+                                char declared_type_str[50];
+                                variable_type_to_string(call_type, call_type_str);
+                                variable_type_to_string(declared_type, declared_type_str);
+                                sprintf(buf, "Function %d argument type doesn't match, expected '%s', has '%s'", i + 1, declared_type_str, call_type_str);
+                                print_error(buf, syntax->function_call->name, syntax->lineno);
+                                is_correct = false;
+                            }
                         }
                     }
                 }
+
+                
             }
             
             break;
