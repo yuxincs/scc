@@ -343,23 +343,12 @@ bool semantic_analysis(Syntax * syntax)
             }
             break;
         }
-        case UNARY_EXPRESSION:
-        {
-            // type conflicts
-            check_expression_type(syntax);
-            break;
-        }
-        case BINARY_EXPRESSION:
-        {
-            // type conflicts
-            check_expression_type(syntax);
-            break;
-        }
         case IF_STATEMENT:
         {
             // condition type
-            if(!semantic_analysis(syntax->if_statement->condition))
+            if(check_expression_type(syntax->if_statement->condition) == NULL)
                 is_correct = false;
+
             ENTER_SCOPE();
             if(!semantic_analysis(syntax->if_statement->body))
                 is_correct = false;
