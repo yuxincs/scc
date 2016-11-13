@@ -5,6 +5,7 @@
 #include "syntax.h"
 #include "scc_yacc.h"
 #include "semantic.h"
+#include "intercode.h"
 
 extern FILE * yyin;
 // TODO: This method for showing more details about the file content
@@ -54,7 +55,10 @@ int main(int argc, char ** argv)
     if(semantic_analysis(top_level) == false)
         return 0;
 
-    // TODO: generate intermidiate code
+    // generate intermidiate code
+    List * code_list = list_new();
+    generate_intermediate_code(code_list, top_level);
+    print_quad_list(code_list);
 
     // TODO: generate target code from intermidiate code
     
