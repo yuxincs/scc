@@ -350,7 +350,11 @@ bool semantic_analysis(Syntax * syntax)
                 is_correct = false;
 
             ENTER_SCOPE();
-            if(!semantic_analysis(syntax->if_statement->body))
+            if(!semantic_analysis(syntax->if_statement->then_body))
+                is_correct = false;
+            LEAVE_SCOPE();
+            ENTER_SCOPE();
+            if(!semantic_analysis(syntax->if_statement->else_body))
                 is_correct = false;
             LEAVE_SCOPE();
             break;

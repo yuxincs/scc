@@ -192,12 +192,19 @@ void generate_intermediate_code(List * code_list, Syntax * syntax)
             list_append(code_list, quad);
                
             ENTER_SCOPE();
-            generate_intermediate_code(code_list, syntax->if_statement->body);
+            generate_intermediate_code(code_list, syntax->if_statement->then_body);
+            quad = quad_new(OP_GOTO);
+            strcpy(quad->result, failure_label);
+            list_append(code_list, quad);
             LEAVE_SCOPE();
 
             quad = quad_new(OP_LABEL);
             strcpy(quad->result, failure_label);
             list_append(code_list, quad);
+
+            ENTER_SCOPE();
+            generate_intermediate_code(code_list, syntax->if_statement->else_body);
+            LEAVE_SCOPE();
             break;
         }
         case RETURN_STATEMENT:
@@ -382,7 +389,7 @@ void print_quad_list(List *code_list)
     for(int i = 0; i < list_length(code_list); ++i)
     {
         Quad * quad = (Quad *)list_get(code_list, i);
-        printf("%d: ", i);
+        printf("%d: ", i + 1);
         print_quad(quad);
     }
 }

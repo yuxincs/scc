@@ -109,7 +109,8 @@ Syntax * syntax_new(SyntaxType type)
         {
             syntax->if_statement = (IfStatement *)malloc(sizeof(IfStatement));
             syntax->if_statement->condition = NULL;
-            syntax->if_statement->body = NULL;
+            syntax->if_statement->then_body = NULL;
+            syntax->if_statement->else_body = NULL;
             break;
         }
         case RETURN_STATEMENT:
@@ -332,8 +333,10 @@ void print_syntax_depth(Syntax * syntax, int depth)
             print_syntax_depth(syntax->if_statement->condition, depth + 2);
             PRINT_SPACE(depth)
             printf("Then:\n");
-            print_syntax_depth(syntax->if_statement->body, depth + 2);
-         
+            print_syntax_depth(syntax->if_statement->then_body, depth + 2);
+            PRINT_SPACE(depth)
+            printf("Else:\n");
+            print_syntax_depth(syntax->if_statement->else_body, depth + 2);
             break;
         }
         case RETURN_STATEMENT:
