@@ -630,7 +630,7 @@ if_statement:
     {
         Syntax * syntax = syntax_new(IF_STATEMENT);
         syntax->if_statement->condition = $3;
-        syntax->if_statement->body = $6;
+        syntax->if_statement->then_body = $6;
         $$ = syntax;
     }
     |
@@ -638,7 +638,43 @@ if_statement:
     {
         Syntax * syntax = syntax_new(IF_STATEMENT);
         syntax->if_statement->condition = $3;
-        syntax->if_statement->body = $5;
+        syntax->if_statement->then_body = $5;
+        $$ = syntax;
+    }
+    |
+    L_IF '(' expression ')' '{' in_block_statement_list '}' L_ELSE '{' in_block_statement_list '}'
+    {
+        Syntax * syntax = syntax_new(IF_STATEMENT);
+        syntax->if_statement->condition = $3;
+        syntax->if_statement->then_body = $6;
+        syntax->if_statement->else_body = $10;
+        $$ = syntax;
+    }
+    |
+    L_IF '(' expression ')' in_block_statement L_ELSE in_block_statement
+    {
+        Syntax * syntax = syntax_new(IF_STATEMENT);
+        syntax->if_statement->condition = $3;
+        syntax->if_statement->then_body = $5;
+        syntax->if_statement->else_body = $7;
+        $$ = syntax;
+    }
+    |
+    L_IF '(' expression ')' '{' in_block_statement_list '}' L_ELSE in_block_statement
+    {
+        Syntax * syntax = syntax_new(IF_STATEMENT);
+        syntax->if_statement->condition = $3;
+        syntax->if_statement->then_body = $6;
+        syntax->if_statement->else_body = $9;
+        $$ = syntax;
+    }
+    |
+    L_IF '(' expression ')' in_block_statement L_ELSE '{' in_block_statement_list '}'
+    {
+        Syntax * syntax = syntax_new(IF_STATEMENT);
+        syntax->if_statement->condition = $3;
+        syntax->if_statement->then_body = $5;
+        syntax->if_statement->else_body = $8;
         $$ = syntax;
     }
     ;
