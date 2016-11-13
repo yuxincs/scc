@@ -39,7 +39,12 @@ Operator unary_type_to_operator(UnaryExpressionType type)
 
 void generate_expression(List * code_list, Syntax * syntax, char * temp)
 {
-    assert(syntax != NULL);
+    if(syntax == NULL)
+    {
+        temp[0] = '\0';
+        return;
+    }
+        
     switch(syntax->type)
     {
         case BINARY_EXPRESSION:
@@ -48,12 +53,14 @@ void generate_expression(List * code_list, Syntax * syntax, char * temp)
             char right_temp[5];
             char result_temp[5];
             generate_expression(code_list, syntax->binary_expression->left, left_temp);
-            generate_expression(code_list, syntax->binary_expression->left, right_temp);
+            generate_expression(code_list, syntax->binary_expression->right, right_temp);
             Quad * quad = quad_new(binary_type_to_operator(syntax->binary_expression->type));
             strcpy(quad->arg1, left_temp);
             strcpy(quad->arg2, right_temp);
             new_temp(quad->result);
             list_append(code_list, quad);
+
+            strcpy(temp, quad->result);
             break;
         }
         case UNARY_EXPRESSION:
@@ -64,11 +71,26 @@ void generate_expression(List * code_list, Syntax * syntax, char * temp)
             strcpy(quad->arg1, result_temp);
             strcpy(quad->result, temp);
             list_append(code_list, quad);
+
+            strcpy(temp, quad->result);
+            break;
+        }
+        case VARIABLE:
+        {
+            strcpy(temp, syntax->variable->name);
+            break;
+        }
+        case IMMEDIATE:
+        {
+            char result_temp[5];
+            new_temp(result_temp);
+            Quad * quad = quad_new(OP_DEFINE);
+            sprintf(quad->arg1, "%d", syntax->immediate->int_value);
+            strcpy(quad->result, result_temp);
+            list_append(code_list, quad);
             break;
         }
         
-        
-
         default: printf("Error! Undefined type!\n"); break;
     }
 }
@@ -139,16 +161,6 @@ void generate_intermediate_code(List * code_list, Syntax * syntax)
             // no support for struct in intermediate code generation
             break;
         }
-        case UNARY_EXPRESSION:
-        {
-            // TODO
-            break;
-        }
-        case BINARY_EXPRESSION:
-        {
-            // TODO
-            break;
-        }
         case IF_STATEMENT:
         {
             // TODO
@@ -161,7 +173,9 @@ void generate_intermediate_code(List * code_list, Syntax * syntax)
         }
         case RETURN_STATEMENT:
         {
-            // TODO
+            Quad * quad = quad_new(OP_RETURN);
+            generate_expression(code_list, syntax->return_statement->expression, quad->result);
+            list_append(code_list, quad);
             break;
         }
         case FUNCTION_DECLARATION:
