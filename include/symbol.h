@@ -7,7 +7,12 @@ typedef struct Symbol
 {
     int level;
     char *name;
+
+    // used in semantic analysis
     Syntax * declaration;
+
+    // used in intermediate code generation
+    char *var_name;
 } Symbol;
 
 Symbol * symbol_new();
