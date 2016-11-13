@@ -14,7 +14,8 @@ int fibonacci(int n)
 
 void main()
 {
-
+    int n = readint();
+    writeint(fibonacci(n));
     return;
 }
 
