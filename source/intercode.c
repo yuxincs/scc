@@ -77,8 +77,11 @@ void generate_expression(List * code_list, Syntax * syntax, char * temp)
         }
         case VARIABLE:
         {
-            char var[5];
-            new_variable(temp);
+            Symbol * previous_symbol = get_symbol(symbol_table, syntax->variable->name);
+            
+            assert(previous_symbol != NULL);
+            strcpy(temp, previous_symbol->var_name);
+
             break;
         }
         case FUNCTION_CALL:
@@ -111,12 +114,7 @@ void generate_expression(List * code_list, Syntax * syntax, char * temp)
         }
         case IMMEDIATE:
         {
-            char result_temp[5];
-            new_temp(result_temp);
-            Quad * quad = quad_new(OP_DEFINE);
-            sprintf(quad->arg1, "%d", syntax->immediate->int_value);
-            strcpy(quad->result, result_temp);
-            list_append(code_list, quad);
+            sprintf(temp, "%d", syntax->immediate->int_value);   
             break;
         }
         
@@ -141,20 +139,14 @@ void generate_intermediate_code(List * code_list, Syntax * syntax)
         {
             Symbol * previous_symbol = get_symbol(symbol_table, syntax->variable_declaration->name);
             
-            if(previous_symbol == NULL)
-            {
-                Symbol *symbol = symbol_new();
-                symbol->level = cur_level;
-                strcpy(symbol->name, syntax->variable_declaration->name);
-                symbol->declaration = syntax;
-                insert_symbol(symbol_table, symbol);
-            }
-            break;
-        }
-        case VARIABLE:
-        {
-            Symbol * previous_symbol = get_symbol(symbol_table, syntax->variable->name);
-            
+            assert(previous_symbol == NULL);
+
+            Symbol *symbol = symbol_new();
+            symbol->level = cur_level;
+            strcpy(symbol->name, syntax->variable_declaration->name);
+            new_variable(symbol->var_name);
+            symbol->declaration = syntax;
+            insert_symbol(symbol_table, symbol);
             
             break;
         }
@@ -164,19 +156,7 @@ void generate_intermediate_code(List * code_list, Syntax * syntax)
 
             break;
         }
-        case ARRAY_VARIABLE:
-        {
-            Symbol * previous_symbol = get_symbol(symbol_table, syntax->array_variable->name);
-
-            
-            break;
-        }
         case STRUCT_DECLARATION:
-        {
-            // no support for struct in intermediate code generation
-            break;
-        }
-        case STRUCT_VARIABLE:
         {
             // no support for struct in intermediate code generation
             break;
@@ -229,37 +209,35 @@ void generate_intermediate_code(List * code_list, Syntax * syntax)
         }
         case FUNCTION_DECLARATION:
         {
-            Symbol * previous_symbol = get_symbol(symbol_table, syntax->function_declaration->name);
-         
-            if(previous_symbol == NULL)
-            {
-                Symbol *symbol = symbol_new();
-                symbol->level = cur_level;
-                strcpy(symbol->name, syntax->function_declaration->name);
-                symbol->declaration = syntax;
-                insert_symbol(symbol_table, symbol);
-            }
-
             Quad * quad = quad_new(OP_FUNCTION);
             strcpy(quad->result, syntax->function_declaration->name);
             list_append(code_list, quad);
 
+            ENTER_SCOPE();
+            old_function = cur_function;
+            cur_function = syntax;
+
+            // process the arguments
             if(syntax->function_declaration->arguments != NULL)
             {
                 for(int i = 0; i < list_length(syntax->function_declaration->arguments->block->statements); ++i)
                 {
                     Syntax * argument = (Syntax *)list_get(syntax->function_declaration->arguments->block->statements, i);
+                    
+                    // insert into symbol table
+                    Symbol *symbol = symbol_new();
+                    symbol->level = cur_level;
+                    strcpy(symbol->name, argument->variable_declaration->name);
+                    new_variable(symbol->var_name);
+                    symbol->declaration = argument;
+                    insert_symbol(symbol_table, symbol);
+
+                    // add PARAM code
                     Quad * quad = quad_new(OP_PARAM);
-                    char var[5];
-                    new_variable(var);
-                    strcpy(quad->result, var);
+                    strcpy(quad->result, symbol->var_name);
                     list_append(code_list, quad);
                 }
             }
-            
-            ENTER_SCOPE();
-            old_function = cur_function;
-            cur_function = syntax;
 
             generate_intermediate_code(code_list, syntax->function_declaration->block);
                
@@ -294,7 +272,9 @@ void generate_intermediate_code(List * code_list, Syntax * syntax)
             assert(syntax->while_statement->condition->type == BINARY_EXPRESSION);
 
             char start_label[10];
+            char success_label[10];
             char failure_label[10];
+            new_label(start_label);
             new_label(success_label);
             new_label(failure_label);
 
@@ -308,13 +288,27 @@ void generate_intermediate_code(List * code_list, Syntax * syntax)
             generate_expression(code_list, syntax->while_statement->condition->binary_expression->left, left_temp);
             generate_expression(code_list, syntax->while_statement->condition->binary_expression->right, right_temp);
             
-            // TODO
-            //semantic_analysis(syntax->while_statement->condition)
-           
+            quad = quad_new(binary_type_to_operator(syntax->while_statement->condition->binary_expression->type));
+            strcpy(quad->arg1, left_temp);
+            strcpy(quad->arg2, right_temp);
+            strcpy(quad->result, success_label);
+            list_append(code_list, quad);
+
+            quad = quad_new(OP_LABEL);
+            strcpy(quad->result, success_label);
+            list_append(code_list, quad);
+
             ENTER_SCOPE();
-            //semantic_analysis(syntax->while_statement->body)
-                
+            generate_intermediate_code(code_list, syntax->while_statement->body);
             LEAVE_SCOPE();
+
+            quad = quad_new(OP_GOTO);
+            strcpy(quad->result, start_label);
+            list_append(code_list, quad);
+
+            quad = quad_new(OP_LABEL);
+            strcpy(quad->result, failure_label);
+            list_append(code_list, quad);
             break;
         }
         case BLOCK:
@@ -359,21 +353,21 @@ void quad_delete(Quad * quad)
 
 void new_label(char *name)
 {
-    static int number = 0;
+    static int number = 1;
     sprintf(name, "Label%d", number);
     ++number;
 }
 
 void new_temp(char *name)
 {
-    static int number = 0;
+    static int number = 1;
     sprintf(name, "t%d", number);
     ++number;
 }
 
 void new_variable(char *name)
 {
-    static int number = 0;
+    static int number = 1;
     sprintf(name, "v%d", number);
     ++number;
 }
@@ -388,6 +382,7 @@ void print_quad_list(List *code_list)
     for(int i = 0; i < list_length(code_list); ++i)
     {
         Quad * quad = (Quad *)list_get(code_list, i);
+        printf("%d: ", i);
         print_quad(quad);
     }
 }
