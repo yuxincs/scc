@@ -338,8 +338,6 @@ function_declaration_statement:
             function->function_declaration->type = $1;
             strcpy(function->function_declaration->name, $2);
             function->function_declaration->block = $6;
-            if($6 == NULL)
-                printf("FUCKYOU");
             $$ = function;
         }
         |
@@ -433,6 +431,13 @@ expression:
             Syntax * syntax = syntax_new(FUNCTION_CALL);
             strcpy(syntax->function_call->name, $1);
             syntax->function_call->arguments = $3;
+            $$ = syntax;
+        }
+        |
+        L_IDENTIFIER '(' ')'
+        {
+            Syntax * syntax = syntax_new(FUNCTION_CALL);
+            strcpy(syntax->function_call->name, $1);
             $$ = syntax;
         }
         |
