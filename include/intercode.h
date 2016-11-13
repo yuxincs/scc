@@ -69,6 +69,7 @@ void quad_delete(Quad * quad);
 
 void new_label(char *name);
 void new_temp(char *name);
+void new_variable(char *name);
 
 void print_quad(Quad * quad);
 void print_quad_list(List *code_list);
