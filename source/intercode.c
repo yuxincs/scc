@@ -291,6 +291,23 @@ void generate_intermediate_code(List * code_list, Syntax * syntax)
         }
         case WHILE_STATEMENT:
         {
+            assert(syntax->while_statement->condition->type == BINARY_EXPRESSION);
+
+            char start_label[10];
+            char failure_label[10];
+            new_label(success_label);
+            new_label(failure_label);
+
+            Quad *quad = quad_new(OP_LABEL);
+            strcpy(quad->result, start_label);
+            list_append(code_list, quad);
+
+            // do check the condition
+            char left_temp[5];
+            char right_temp[5];
+            generate_expression(code_list, syntax->while_statement->condition->binary_expression->left, left_temp);
+            generate_expression(code_list, syntax->while_statement->condition->binary_expression->right, right_temp);
+            
             // TODO
             //semantic_analysis(syntax->while_statement->condition)
            
