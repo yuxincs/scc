@@ -51,6 +51,7 @@ Symbol * generate_input_function()
     symbol->level = 0;
     strcpy(symbol->name, "readint");
     symbol->declaration = syntax;
+    return symbol;
 }
 
 Symbol * generate_output_function()
@@ -73,4 +74,5 @@ Symbol * generate_output_function()
     symbol->level = 0;
     strcpy(symbol->name, "writeint");
     symbol->declaration = syntax;
+    return symbol;
 }
