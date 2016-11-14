@@ -1,6 +1,7 @@
 #ifndef SCC_INTERCODE_HEADER
 #define SCC_INTERCODE_HEADER
 
+#include <stdio.h>
 #include "list.h"
 #include "syntax.h"
 
@@ -71,8 +72,7 @@ void new_label(char *name);
 void new_temp(char *name);
 void new_variable(char *name);
 
-void print_quad(Quad * quad);
-void print_quad_list(List *code_list);
+void print_quad_list(FILE *fp, List *code_list);
 
 
 #endif

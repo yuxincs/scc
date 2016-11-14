@@ -1,6 +1,7 @@
 #ifndef SCC_SYNTAX_HEADER
 #define SCC_SYNTAX_HEADER
 
+#include <stdio.h>
 #include "list.h"
 
 struct _Syntax;
@@ -199,7 +200,7 @@ struct _Syntax
 
 Syntax * syntax_new(SyntaxType type);
 void syntax_delete(Syntax *syntax);
-void print_syntax(Syntax * syntax);
+void print_syntax(FILE *fp, Syntax * syntax);
 
 
 #endif
