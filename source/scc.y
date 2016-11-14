@@ -623,6 +623,7 @@ in_block_statement:
             Syntax * syntax = syntax_new(RETURN_STATEMENT);
             $$ = syntax;
         }
+        | error ';'
         ;
 
 if_statement:
