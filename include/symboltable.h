@@ -12,6 +12,8 @@ typedef struct _SymbolTable
 
 SymbolTable * new_symbol_table();
 
+void symbol_table_delete(SymbolTable * table);
+
 Symbol * get_symbol(SymbolTable * table, char * name);
 
 void insert_symbol(SymbolTable * table, Symbol * symbol);
