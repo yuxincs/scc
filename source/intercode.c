@@ -136,23 +136,21 @@ void generate_intermediate_code(List * code_list, Syntax * syntax)
     switch(syntax->type)
     {
         case VARIABLE_DECLARATION:
-        {
-            Symbol * previous_symbol = get_symbol(symbol_table, syntax->variable_declaration->name);
-            
-            assert(previous_symbol == NULL);
+        { 
+            assert(get_symbol(symbol_table, syntax->variable_declaration->name) == NULL);
 
             Symbol *symbol = symbol_new();
             symbol->level = cur_level;
             strcpy(symbol->name, syntax->variable_declaration->name);
+            symbol->var_name = string_new(5);
             new_variable(symbol->var_name);
-            symbol->declaration = syntax;
             insert_symbol(symbol_table, symbol);
             
             break;
         }
         case ARRAY_DECLARATION:
         {
-            Symbol * previous_symbol = get_symbol(symbol_table, syntax->array_declaration->name);
+            assert(get_symbol(symbol_table, syntax->array_declaration->name) == NULL);
 
             break;
         }
@@ -249,8 +247,8 @@ void generate_intermediate_code(List * code_list, Syntax * syntax)
                     Symbol *symbol = symbol_new();
                     symbol->level = cur_level;
                     strcpy(symbol->name, argument->variable_declaration->name);
+                    symbol->var_name = string_new(5);
                     new_variable(symbol->var_name);
-                    symbol->declaration = argument;
                     insert_symbol(symbol_table, symbol);
 
                     // add PARAM code
