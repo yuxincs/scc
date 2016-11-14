@@ -6,6 +6,7 @@
 #include "scc_yacc.h"
 #include "semantic.h"
 #include "intercode.h"
+#include "targetcode.h"
 
 extern FILE * yyin;
 // TODO: This method for showing more details about the file content
@@ -49,8 +50,6 @@ int main(int argc, char ** argv)
     if(yyparse() != 0)
         return 0;
 
-    //print_syntax(top_level);
-
     // semantic analysis
     if(semantic_analysis(top_level) == false)
         return 0;
@@ -58,9 +57,13 @@ int main(int argc, char ** argv)
     // generate intermidiate code
     List * code_list = list_new();
     generate_intermediate_code(code_list, top_level);
-    print_quad_list(code_list);
 
-    // TODO: generate target code from intermidiate code
+    // generate target code from intermidiate code
+    char * pos = strstr(file_name, ".c");
+    strcpy(pos, ".asm");
+    FILE * out_file = fopen(file_name, "w");
+    generate_target_code(out_file, code_list);
+
     
     printf("\033[1;32mCompile Success!\033[0m\n");
     return 0;
