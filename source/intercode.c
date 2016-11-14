@@ -313,6 +313,10 @@ void generate_intermediate_code(List * code_list, Syntax * syntax)
             strcpy(quad->result, success_label);
             list_append(code_list, quad);
 
+            quad = quad_new(OP_GOTO);
+            strcpy(quad->result, failure_label);
+            list_append(code_list, quad);
+
             quad = quad_new(OP_LABEL);
             strcpy(quad->result, success_label);
             list_append(code_list, quad);
@@ -391,17 +395,17 @@ void new_variable(char *name)
     ++number;
 }
 
-void print_quad(Quad * quad)
+void print_quad(FILE * fp, Quad * quad)
 {
-    printf("(%d, %s, %s, %s)\n", quad->op, quad->arg1, quad->arg2, quad->result);
+    fprintf(fp, "(%d, %s, %s, %s)\n", quad->op, quad->arg1, quad->arg2, quad->result);
 }
 
-void print_quad_list(List *code_list)
+void print_quad_list(FILE * fp, List *code_list)
 {
     for(int i = 0; i < list_length(code_list); ++i)
     {
         Quad * quad = (Quad *)list_get(code_list, i);
-        printf("%d: ", i + 1);
-        print_quad(quad);
+        fprintf(fp, "%d: ", i + 1);
+        print_quad(fp, quad);
     }
 }
