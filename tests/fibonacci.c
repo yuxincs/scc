@@ -1,21 +1,15 @@
-
-int fibonacci(int n)
+int main()
 {
-    if(n == 1)
-        return 1;
-    if(n == 2)
-        return 1;
-
-    int x = fibonacci(n - 1);
-    int y = fibonacci(n - 2);
-
-    return x + y;
-}
-
-void main()
-{
-    int n = readint();
-    writeint(fibonacci(n));
-    return;
+    int a = 0, b = 1, i = 0, n;
+    n = readint();
+    while(i < n)
+    {
+        int c = a + b;
+        writeint(b);
+        a = b;
+        b = c;
+        i = i + 1;
+    }
+    return 0;
 }
 
