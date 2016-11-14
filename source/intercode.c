@@ -136,23 +136,21 @@ void generate_intermediate_code(List * code_list, Syntax * syntax)
     switch(syntax->type)
     {
         case VARIABLE_DECLARATION:
-        {
-            Symbol * previous_symbol = get_symbol(symbol_table, syntax->variable_declaration->name);
-            
-            assert(previous_symbol == NULL);
+        { 
+            assert(get_symbol(symbol_table, syntax->variable_declaration->name) == NULL);
 
             Symbol *symbol = symbol_new();
             symbol->level = cur_level;
             strcpy(symbol->name, syntax->variable_declaration->name);
+            symbol->var_name = string_new(5);
             new_variable(symbol->var_name);
-            symbol->declaration = syntax;
             insert_symbol(symbol_table, symbol);
             
             break;
         }
         case ARRAY_DECLARATION:
         {
-            Symbol * previous_symbol = get_symbol(symbol_table, syntax->array_declaration->name);
+            assert(get_symbol(symbol_table, syntax->array_declaration->name) == NULL);
 
             break;
         }
@@ -249,8 +247,8 @@ void generate_intermediate_code(List * code_list, Syntax * syntax)
                     Symbol *symbol = symbol_new();
                     symbol->level = cur_level;
                     strcpy(symbol->name, argument->variable_declaration->name);
+                    symbol->var_name = string_new(5);
                     new_variable(symbol->var_name);
-                    symbol->declaration = argument;
                     insert_symbol(symbol_table, symbol);
 
                     // add PARAM code
@@ -313,6 +311,10 @@ void generate_intermediate_code(List * code_list, Syntax * syntax)
             strcpy(quad->arg1, left_temp);
             strcpy(quad->arg2, right_temp);
             strcpy(quad->result, success_label);
+            list_append(code_list, quad);
+
+            quad = quad_new(OP_GOTO);
+            strcpy(quad->result, failure_label);
             list_append(code_list, quad);
 
             quad = quad_new(OP_LABEL);
@@ -393,17 +395,17 @@ void new_variable(char *name)
     ++number;
 }
 
-void print_quad(Quad * quad)
+void print_quad(FILE * fp, Quad * quad)
 {
-    printf("(%d, %s, %s, %s)\n", quad->op, quad->arg1, quad->arg2, quad->result);
+    fprintf(fp, "(%d, %s, %s, %s)\n", quad->op, quad->arg1, quad->arg2, quad->result);
 }
 
-void print_quad_list(List *code_list)
+void print_quad_list(FILE * fp, List *code_list)
 {
     for(int i = 0; i < list_length(code_list); ++i)
     {
         Quad * quad = (Quad *)list_get(code_list, i);
-        printf("%d: ", i + 1);
-        print_quad(quad);
+        fprintf(fp, "%d: ", i + 1);
+        print_quad(fp, quad);
     }
 }

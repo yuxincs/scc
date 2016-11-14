@@ -8,11 +8,18 @@ typedef struct Symbol
     int level;
     char *name;
 
-    // used in semantic analysis
-    Syntax * declaration;
+    union
+    {
+        // used in semantic analysis
+        Syntax * declaration;
 
-    // used in intermediate code generation
-    char *var_name;
+        // used in intermediate code generation
+        char *var_name;
+
+        // used in target code generation
+        int address;
+    };
+    
 } Symbol;
 
 Symbol * symbol_new();

@@ -18,6 +18,8 @@ void variable_type_to_string(Syntax * type, char * type_string)
         strcpy(type_string, "float");
     else if(type->variable_type->type == STRUCT)
         sprintf(type_string, "struct %s", type->variable_type->name);
+    else if(type->variable_type->type == VOID)
+        strcpy(type_string, "void");
 }
 
 bool is_variable_type_equal(Syntax * type1, Syntax * type2)
@@ -370,7 +372,7 @@ bool semantic_analysis(Syntax * syntax)
                 char function_type[50];
                 variable_type_to_string(type, return_type);
                 variable_type_to_string(cur_function->function_declaration->type, function_type);
-                sprintf(buf, "Return type %s doesn't match the function type %s'", return_type, function_type);
+                sprintf(buf, "Return type '%s'' doesn't match the function type '%s'", return_type, function_type);
                 print_error(buf, "return", syntax->lineno);
                 is_correct = false;
             }
@@ -477,10 +479,7 @@ bool semantic_analysis(Syntax * syntax)
                         }
                     }
                 }
-
-                
             }
-            
             break;
         }
         case ASSIGNMENT:
@@ -505,7 +504,7 @@ bool semantic_analysis(Syntax * syntax)
         }
         case WHILE_STATEMENT:
         {
-            if(!semantic_analysis(syntax->while_statement->condition))
+            if(check_expression_type(syntax->while_statement->condition) == NULL)
                 is_correct = false;
 
             // condition type check

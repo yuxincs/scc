@@ -33,6 +33,16 @@ SymbolTable * new_symbol_table()
     return table;
 }
 
+void symbol_table_delete(SymbolTable * table)
+{
+    for(int i = 0; i < list_length(table->list); ++i)
+    {
+        Symbol * symbol = (Symbol *)list_get(table->list, i);
+        symbol_delete(symbol);
+    }
+    list_delete(table->list);
+}
+
 void remove_level(SymbolTable * table, int level)
 {
     while(((Symbol *)list_get(table->list, list_length(table->list) - 1))->level == level)
