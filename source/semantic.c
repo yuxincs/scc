@@ -11,7 +11,7 @@ SymbolTable * symbol_table = NULL;
 void variable_type_to_string(Syntax * type, char * type_string)
 {
     assert(type->type == VARIABLE_TYPE);
-    char buf[50];
+    char buf[100];
     if(type->variable_type->type == INT)
         strcpy(type_string, "int");
     else if(type->variable_type->type == FLOAT)
@@ -81,7 +81,7 @@ Syntax * check_expression_type(Syntax * syntax)
                 Symbol * previous_symbol = get_symbol(symbol_table, syntax->struct_variable->name);
 
                 assert(previous_symbol != NULL);
-                char struct_name[50];
+                char struct_name[100];
                 sprintf(struct_name, "struct %s", previous_symbol->declaration->variable_declaration->type->variable_type->name);
                 Symbol * struct_symbol = get_symbol(symbol_table, struct_name);
                 assert(struct_symbol != NULL);
@@ -124,9 +124,9 @@ Syntax * check_expression_type(Syntax * syntax)
             {
                 if(!is_variable_type_equal(type1, type2))
                 {
-                    char buf[50];
-                    char type1_str[50];
-                    char type2_str[50];
+                    char buf[100];
+                    char type1_str[100];
+                    char type2_str[100];
                     variable_type_to_string(type1, type1_str);
                     variable_type_to_string(type2, type2_str);
                     sprintf(buf, "Expression type conflicts, expected '%s', has '%s'", type1_str, type2_str);
@@ -174,7 +174,7 @@ bool semantic_analysis(Syntax * syntax)
             // redefinition check
             else
             {
-                char buf[50];
+                char buf[100];
                 sprintf(buf, "Redefinition of '%s'", syntax->variable_declaration->name);
                 print_error(buf, syntax->variable_declaration->name, syntax->lineno);
                 print_note("Previous definition is here", syntax->variable_declaration->name, previous_symbol->declaration->lineno);
@@ -183,13 +183,13 @@ bool semantic_analysis(Syntax * syntax)
             // incomplete struct type check
             if(syntax->variable_declaration->type->variable_type->type == STRUCT)
             {
-                char struct_name[50];
+                char struct_name[100];
                 sprintf(struct_name, "struct %s", syntax->variable_declaration->type->variable_type->name);
                 
                 Symbol * struct_symbol = get_symbol(symbol_table, struct_name);
                 if(struct_symbol == NULL)
                 {
-                    char buf[50];
+                    char buf[100];
                     sprintf(buf, "Variable has incomplete type '%s'", struct_name);
                     print_error(buf, struct_name, syntax->lineno);
                     is_correct = false;
@@ -204,7 +204,7 @@ bool semantic_analysis(Syntax * syntax)
             // undefined variable check
             if(previous_symbol == NULL)
             {
-                char buf[50];
+                char buf[100];
                 sprintf(buf, "Use of undeclared identifier '%s'", syntax->variable->name);
                 print_error(buf, syntax->variable->name, syntax->lineno);
                 is_correct = false;
@@ -226,7 +226,7 @@ bool semantic_analysis(Syntax * syntax)
             // redefinition check
             else
             {
-                char buf[50];
+                char buf[100];
                 sprintf(buf, "Redefinition of '%s'", syntax->array_declaration->name);
                 print_error(buf, syntax->array_declaration->name, syntax->lineno);
                 print_note("Previous definition is here", syntax->array_declaration->name, previous_symbol->declaration->lineno);
@@ -241,7 +241,7 @@ bool semantic_analysis(Syntax * syntax)
             // undefined variable check
             if(previous_symbol == NULL)
             {
-                char buf[50];
+                char buf[100];
                 sprintf(buf, "Use of undeclared identifier '%s'", syntax->array_variable->name);
                 print_error(buf, syntax->array_variable->name, syntax->lineno);
                 is_correct = false;
@@ -251,7 +251,7 @@ bool semantic_analysis(Syntax * syntax)
                 // '[]' used on non-array variable
                 if(previous_symbol->declaration->type != ARRAY_DECLARATION)
                 {
-                    char buf[50];
+                    char buf[100];
                     sprintf(buf, "'[]' used on non-array variable '%s'", syntax->array_variable->name);
                     print_error(buf, syntax->array_variable->name, syntax->lineno);
                     is_correct = false;
@@ -261,7 +261,7 @@ bool semantic_analysis(Syntax * syntax)
         }
         case STRUCT_DECLARATION:
         {
-            char struct_name[50];
+            char struct_name[100];
             sprintf(struct_name, "struct %s", syntax->struct_declaration->name);
 
             Symbol * previous_symbol = get_symbol(symbol_table, struct_name);
@@ -276,7 +276,7 @@ bool semantic_analysis(Syntax * syntax)
             }
             else
             {
-                char buf[50];
+                char buf[100];
                 sprintf(buf, "Redefinition of '%s'", struct_name);
                 print_error(buf, struct_name, syntax->lineno);
                 print_note("Previous definition is here", syntax->struct_declaration->name, previous_symbol->declaration->lineno);
@@ -295,7 +295,7 @@ bool semantic_analysis(Syntax * syntax)
             // undefined variable check
             if(previous_symbol == NULL)
             {
-                char buf[50];
+                char buf[100];
                 sprintf(buf, "Use of undeclared identifier '%s'", syntax->struct_variable->name);
                 print_error(buf, syntax->struct_variable->name, syntax->lineno);
                 is_correct = false;
@@ -306,7 +306,7 @@ bool semantic_analysis(Syntax * syntax)
                 if(previous_symbol->declaration->type == VARIABLE_DECLARATION && 
                    previous_symbol->declaration->variable_declaration->type->variable_type->type == STRUCT)
                 {
-                    char struct_name[50];
+                    char struct_name[100];
                     sprintf(struct_name, "struct %s", previous_symbol->declaration->variable_declaration->type->variable_type->name);
                     Symbol * struct_symbol = get_symbol(symbol_table, struct_name);
                     
@@ -328,7 +328,7 @@ bool semantic_analysis(Syntax * syntax)
                     }
                     if(!has_member)
                     {
-                        char buf[50];
+                        char buf[100];
                         sprintf(buf, "Illegal member access of member '%s'", syntax->struct_variable->member);
                         print_error(buf, syntax->struct_variable->member, syntax->lineno);
                         is_correct = false;
@@ -337,7 +337,7 @@ bool semantic_analysis(Syntax * syntax)
                 // '.' used on non-struct variable
                 else
                 {
-                    char buf[50];
+                    char buf[100];
                     sprintf(buf, "'.' used on non-struct variable '%s'", syntax->struct_variable->name);
                     print_error(buf, syntax->struct_variable->name, syntax->lineno);
                     is_correct = false;
@@ -367,9 +367,9 @@ bool semantic_analysis(Syntax * syntax)
             Syntax * type = check_expression_type(syntax->return_statement->expression);
             if(!is_variable_type_equal(cur_function->function_declaration->type, type))
             {
-                char buf[50];
-                char return_type[50];
-                char function_type[50];
+                char buf[100];
+                char return_type[100];
+                char function_type[100];
                 variable_type_to_string(type, return_type);
                 variable_type_to_string(cur_function->function_declaration->type, function_type);
                 sprintf(buf, "Return type '%s'' doesn't match the function type '%s'", return_type, function_type);
@@ -393,7 +393,7 @@ bool semantic_analysis(Syntax * syntax)
             // redefinition check
             else
             {
-                char buf[50];
+                char buf[100];
                 sprintf(buf, "Redefinition of '%s'", syntax->function_declaration->name);
                 print_error(buf, syntax->function_declaration->name, syntax->lineno);
                 print_note("Previous definition is here", syntax->function_declaration->name, previous_symbol->declaration->lineno);
@@ -418,7 +418,7 @@ bool semantic_analysis(Syntax * syntax)
             // undefined function call
             if(previous_symbol == NULL)
             {
-                char buf[50];
+                char buf[100];
                 sprintf(buf, "Undefined function name '%s'", syntax->function_call->name);
                 print_error(buf, syntax->function_call->name, syntax->lineno);
                 is_correct = false;
@@ -426,7 +426,7 @@ bool semantic_analysis(Syntax * syntax)
             // '()' used on non-function
             else if(previous_symbol->declaration->type != FUNCTION_DECLARATION)
             {
-                char buf[50];
+                char buf[100];
                 sprintf(buf, "'()' used on non-function '%s'", syntax->function_call->name);
                 print_error(buf, syntax->function_call->name, syntax->lineno);
                 is_correct = false;
@@ -444,7 +444,7 @@ bool semantic_analysis(Syntax * syntax)
                     
                 if(declared_number != call_number)
                 {
-                    char buf[50];
+                    char buf[100];
                     sprintf(buf, "Function arguments number doesn't match, expected %d, has %d'", declared_number, call_number);
                     print_error(buf, syntax->function_call->name, syntax->lineno);
                     is_correct = false;
@@ -467,9 +467,9 @@ bool semantic_analysis(Syntax * syntax)
                         {
                             if(!is_variable_type_equal(call_type, declared_type))
                             {
-                                char buf[50];
-                                char call_type_str[50];
-                                char declared_type_str[50];
+                                char buf[100];
+                                char call_type_str[100];
+                                char declared_type_str[100];
                                 variable_type_to_string(call_type, call_type_str);
                                 variable_type_to_string(declared_type, declared_type_str);
                                 sprintf(buf, "Function %d argument type doesn't match, expected '%s', has '%s'", i + 1, declared_type_str, call_type_str);
@@ -491,9 +491,9 @@ bool semantic_analysis(Syntax * syntax)
                 break;
             if(!is_variable_type_equal(expression_type, dest_type))
             {
-                char buf[50];
-                char dest_type_str[50];
-                char expression_type_str[50];
+                char buf[100];
+                char dest_type_str[100];
+                char expression_type_str[100];
                 variable_type_to_string(dest_type, dest_type_str);
                 variable_type_to_string(expression_type, expression_type_str);
                 sprintf(buf, "Assignment has inconsistent types, expected '%s', has '%s'", dest_type_str, expression_type_str);
