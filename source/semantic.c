@@ -209,12 +209,13 @@ bool semantic_analysis(Syntax * syntax)
                 print_error(buf, syntax->variable->name, syntax->lineno);
                 is_correct = false;
             }
-            else if(previous_symbol->declaration->type != VARIABLE_DECLARATION)
+            else if(previous_symbol->declaration->type != VARIABLE_DECLARATION || previous_symbol->declaration->variable_declaration->type->variable_type->type == STRUCT)
             {
                 char buf[100];
                 if(previous_symbol->declaration->type == ARRAY_DECLARATION)
                     sprintf(buf, "Require '[]' on array variable");
-                else if(previous_symbol->declaration->type == STRUCT_DECLARATION)
+                else if(previous_symbol->declaration->type == VARIABLE_DECLARATION && 
+                   previous_symbol->declaration->variable_declaration->type->variable_type->type == STRUCT)
                     sprintf(buf, "Require '.' on array variable");
                 else if(previous_symbol->declaration->type == FUNCTION_DECLARATION)
                     sprintf(buf, "Require '()' on function call");
