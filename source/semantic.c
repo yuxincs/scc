@@ -391,7 +391,7 @@ bool semantic_analysis(Syntax * syntax)
                 insert_symbol(symbol_table, symbol);
             }
             // redefinition check
-            else
+            else if(previous_symbol->level == cur_level)
             {
                 char buf[100];
                 sprintf(buf, "Redefinition of '%s'", syntax->function_declaration->name);
