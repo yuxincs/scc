@@ -55,7 +55,7 @@ Syntax * check_expression_type(Syntax * syntax)
         {
             // wrap the immediate's type
             Syntax * type = syntax_new(VARIABLE_TYPE);
-            type->variable_type->type = IMMEDIATE;
+            type->variable_type->type = syntax->immediate->type;
             return type;
         }
         case VARIABLE:
