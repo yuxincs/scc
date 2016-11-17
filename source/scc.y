@@ -624,6 +624,9 @@ in_block_statement:
             $$ = syntax;
         }
         | error ';'
+        {
+            $$ = NULL;
+        }
         ;
 
 if_statement:
