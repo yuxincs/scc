@@ -172,7 +172,7 @@ bool semantic_analysis(Syntax * syntax)
                 insert_symbol(symbol_table, symbol);
             }
             // redefinition check
-            else
+            else if(previous_symbol->level == cur_level)
             {
                 char buf[100];
                 sprintf(buf, "Redefinition of '%s'", syntax->variable_declaration->name);
@@ -224,7 +224,7 @@ bool semantic_analysis(Syntax * syntax)
                 insert_symbol(symbol_table, symbol);
             }
             // redefinition check
-            else
+            else if(previous_symbol->level == cur_level)
             {
                 char buf[100];
                 sprintf(buf, "Redefinition of '%s'", syntax->array_declaration->name);
@@ -265,7 +265,6 @@ bool semantic_analysis(Syntax * syntax)
             sprintf(struct_name, "struct %s", syntax->struct_declaration->name);
 
             Symbol * previous_symbol = get_symbol(symbol_table, struct_name);
-            // redefinition check
             if(previous_symbol == NULL)
             {
                 Symbol *symbol = symbol_new();
@@ -274,7 +273,8 @@ bool semantic_analysis(Syntax * syntax)
                 symbol->declaration = syntax;
                 insert_symbol(symbol_table, symbol);
             }
-            else
+            // redefinition check
+            else if(previous_symbol->level == cur_level)
             {
                 char buf[100];
                 sprintf(buf, "Redefinition of '%s'", struct_name);
