@@ -39,8 +39,12 @@ bool is_variable_type_equal(Syntax * type1, Syntax * type2)
 
 Syntax * check_expression_type(Syntax * syntax)
 {
+    // TODO:
+    // the wrapped variable type syntax will not be deleted
+    // after usage, which will cause memory leaks
     if(syntax == NULL)
     {
+        // wrap the void type
         Syntax * type = syntax_new(VARIABLE_TYPE);
         type->variable_type->type = VOID;
         return type;
@@ -51,7 +55,7 @@ Syntax * check_expression_type(Syntax * syntax)
         {
             // wrap the immediate's type
             Syntax * type = syntax_new(VARIABLE_TYPE);
-            type->variable_type->type = syntax->immediate->type;
+            type->variable_type->type = IMMEDIATE;
             return type;
         }
         case VARIABLE:
