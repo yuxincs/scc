@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <time.h>
 #include "list.h"
 #include "syntax.h"
 #include "scc_yacc.h"
@@ -30,6 +31,8 @@ void read_file()
 
 int main(int argc, char ** argv)
 {
+    clock_t start_time = clock();
+
     char syntax_file_name[50];
     char ir_file_name[50];
 
@@ -122,7 +125,8 @@ int main(int argc, char ** argv)
         print_quad_list(fp, code_list);
     }
 
-    printf("\033[1;32mCompile Success!\033[0m\n");
+    clock_t end_time = clock();
+    printf("\033[1;32mCompile Succeeded in %g seconds!\033[0m\n", (float)(end_time - start_time) / CLOCKS_PER_SEC);
     return 0;
 }
 
