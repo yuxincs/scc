@@ -234,6 +234,7 @@ void syntax_delete(Syntax * syntax)
         }
         default: break;
     }
+    free(syntax);
 }
 
 
