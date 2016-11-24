@@ -102,6 +102,7 @@ Syntax * syntax_new(SyntaxType type)
         case BLOCK:
         {
             syntax->block = (Block *)malloc(sizeof(Block));
+            syntax->block->can_be_merged = false;
             syntax->block->statements = NULL;
             break;
         }
@@ -399,8 +400,10 @@ void print_syntax_depth(FILE *fp, Syntax * syntax, int depth)
         }
         case BLOCK:
         {
+            PRINT_SPACE(fp, depth)
+            fprintf(fp, "Block ->\n");
             for(int i = 0; i < list_length(syntax->block->statements); ++i)
-                print_syntax_depth(fp, (Syntax *)list_get(syntax->block->statements, i), depth);
+                print_syntax_depth(fp, (Syntax *)list_get(syntax->block->statements, i), depth + 2);
             break;
         }
         case TOP_LEVEL:

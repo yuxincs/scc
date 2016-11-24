@@ -50,3 +50,4 @@ Temporary Items
 build/
 .vscode/
 .idea/
+*.swp
