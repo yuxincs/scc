@@ -65,13 +65,6 @@ typedef struct Quad
 
 void generate_intermediate_code(List * code_list, Syntax * top_level);
 
-Quad * quad_new(Operator op);
-void quad_delete(Quad * quad);
-
-void new_label(char *name);
-void new_temp(char *name);
-void new_variable(char *name);
-
 void print_quad_list(FILE *fp, List *code_list);
 
 

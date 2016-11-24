@@ -5,6 +5,24 @@
 #include "intercode.h"
 #include "symboltable.h"
 
+// private members and functions declaration
+static int label_number = 1;
+static int temp_number = 1;
+static int variable_number = 1;
+Quad * quad_new(Operator op);
+void quad_delete(Quad * quad);
+
+void new_label(char *name);
+void new_temp(char *name);
+void new_variable(char *name);
+
+void translate_expression(List * code_list, Syntax * syntax, char * temp);
+void translate_syntax(List * code_list, Syntax * syntax);
+
+Operator binary_type_to_operator(BinaryExpressionType type);
+Operator unary_type_to_operator(UnaryExpressionType type);
+
+
 #define ENTER_SCOPE() { cur_level++; }
 
 #define LEAVE_SCOPE() { remove_level(symbol_table, cur_level); cur_level--; }
@@ -37,7 +55,16 @@ Operator unary_type_to_operator(UnaryExpressionType type)
     }
 }
 
-void generate_expression(List * code_list, Syntax * syntax, char * temp)
+
+void generate_intermediate_code(List * code_list, Syntax * syntax)
+{
+    assert(syntax != NULL && syntax->type == TOP_LEVEL);
+    
+    translate_syntax(code_list, syntax);
+}
+
+
+void translate_expression(List * code_list, Syntax * syntax, char * temp)
 {
     if(syntax == NULL)
     {
@@ -52,8 +79,8 @@ void generate_expression(List * code_list, Syntax * syntax, char * temp)
             char left_temp[5];
             char right_temp[5];
             char result_temp[5];
-            generate_expression(code_list, syntax->binary_expression->left, left_temp);
-            generate_expression(code_list, syntax->binary_expression->right, right_temp);
+            translate_expression(code_list, syntax->binary_expression->left, left_temp);
+            translate_expression(code_list, syntax->binary_expression->right, right_temp);
             Quad * quad = quad_new(binary_type_to_operator(syntax->binary_expression->type));
             strcpy(quad->arg1, left_temp);
             strcpy(quad->arg2, right_temp);
@@ -66,7 +93,7 @@ void generate_expression(List * code_list, Syntax * syntax, char * temp)
         case UNARY_EXPRESSION:
         {
             char result_temp[5];
-            generate_expression(code_list, syntax->unary_expression->expression, result_temp);
+            translate_expression(code_list, syntax->unary_expression->expression, result_temp);
             Quad * quad = quad_new(unary_type_to_operator(syntax->unary_expression->type));
             strcpy(quad->arg1, result_temp);
             strcpy(quad->result, temp);
@@ -93,7 +120,7 @@ void generate_expression(List * code_list, Syntax * syntax, char * temp)
                 {
                     Syntax * argument = (Syntax *)list_get(syntax->function_call->arguments->block->statements, i);
                     char result_temp[5];
-                    generate_expression(code_list, argument, result_temp);
+                    translate_expression(code_list, argument, result_temp);
                     Quad * quad = quad_new(OP_ARG);
                     strcpy(quad->result, result_temp);
                     list_append(arg_list, quad);
@@ -122,7 +149,8 @@ void generate_expression(List * code_list, Syntax * syntax, char * temp)
     }
 }
 
-void generate_intermediate_code(List * code_list, Syntax * syntax)
+
+void translate_syntax(List * code_list, Syntax * syntax)
 {
     static int cur_level = 0;
     static Syntax * cur_function = NULL;
@@ -164,8 +192,11 @@ void generate_intermediate_code(List * code_list, Syntax * syntax)
             assert(syntax->if_statement->condition->type == BINARY_EXPRESSION);
             char left_temp[5];
             char right_temp[5];
-            generate_expression(code_list, syntax->if_statement->condition->binary_expression->left, left_temp);
-            generate_expression(code_list, syntax->if_statement->condition->binary_expression->right, right_temp);
+            translate_expression(code_list, syntax->if_statement->condition->binary_expression->left, left_temp);
+            translate_expression(code_list, syntax->if_statement->condition->binary_expression->right, right_temp);
+            
+            // reset temp number if expression is completely translated
+            temp_number = 1;
             
             char success_label[10];
             char failure_label[10];
@@ -192,7 +223,7 @@ void generate_intermediate_code(List * code_list, Syntax * syntax)
             list_append(code_list, quad);
                
             ENTER_SCOPE();
-            generate_intermediate_code(code_list, syntax->if_statement->then_body);
+            translate_syntax(code_list, syntax->if_statement->then_body);
             if(syntax->if_statement->else_body != NULL)
             {
                 new_label(end_label);
@@ -210,7 +241,7 @@ void generate_intermediate_code(List * code_list, Syntax * syntax)
             if(syntax->if_statement->else_body != NULL)
             {
                 ENTER_SCOPE();
-                generate_intermediate_code(code_list, syntax->if_statement->else_body);
+                translate_syntax(code_list, syntax->if_statement->else_body);
                 quad = quad_new(OP_LABEL);
                 strcpy(quad->result, end_label);
                 list_append(code_list, quad);
@@ -222,7 +253,10 @@ void generate_intermediate_code(List * code_list, Syntax * syntax)
         case RETURN_STATEMENT:
         {
             Quad * quad = quad_new(OP_RETURN);
-            generate_expression(code_list, syntax->return_statement->expression, quad->result);
+            translate_expression(code_list, syntax->return_statement->expression, quad->result);
+            // reset temp number if expression is completely translated
+            temp_number = 1;
+
             list_append(code_list, quad);
             break;
         }
@@ -258,7 +292,7 @@ void generate_intermediate_code(List * code_list, Syntax * syntax)
                 }
             }
 
-            generate_intermediate_code(code_list, syntax->function_declaration->block);
+            translate_syntax(code_list, syntax->function_declaration->block);
                
             LEAVE_SCOPE();
 
@@ -266,11 +300,11 @@ void generate_intermediate_code(List * code_list, Syntax * syntax)
             break;
         }
         case FUNCTION_CALL:
-        {
-            Symbol * previous_symbol = get_symbol(symbol_table, syntax->function_call->name);
-            
+        {       
             char result_temp[5];
-            generate_expression(code_list, syntax, result_temp);
+            translate_expression(code_list, syntax, result_temp);
+            // reset temp number if expression is completely translated
+            temp_number = 1;
 
             break;
         }
@@ -278,8 +312,12 @@ void generate_intermediate_code(List * code_list, Syntax * syntax)
         {
             char dest_temp[5];
             char result_temp[5];
-            generate_expression(code_list, syntax->assignment->dest, dest_temp);
-            generate_expression(code_list, syntax->assignment->expression, result_temp);
+            translate_expression(code_list, syntax->assignment->dest, dest_temp);
+            translate_expression(code_list, syntax->assignment->expression, result_temp);
+
+            // reset temp number if expression is completely translated
+            temp_number = 1;
+
             Quad *quad = quad_new(OP_DEFINE);
             strcpy(quad->arg1, result_temp);
             strcpy(quad->result, dest_temp);
@@ -304,8 +342,11 @@ void generate_intermediate_code(List * code_list, Syntax * syntax)
             // do check the condition
             char left_temp[5];
             char right_temp[5];
-            generate_expression(code_list, syntax->while_statement->condition->binary_expression->left, left_temp);
-            generate_expression(code_list, syntax->while_statement->condition->binary_expression->right, right_temp);
+            translate_expression(code_list, syntax->while_statement->condition->binary_expression->left, left_temp);
+            translate_expression(code_list, syntax->while_statement->condition->binary_expression->right, right_temp);
+
+            // reset temp number if expression is completely translated
+            temp_number = 1;
             
             quad = quad_new(binary_type_to_operator(syntax->while_statement->condition->binary_expression->type));
             strcpy(quad->arg1, left_temp);
@@ -322,7 +363,7 @@ void generate_intermediate_code(List * code_list, Syntax * syntax)
             list_append(code_list, quad);
 
             ENTER_SCOPE();
-            generate_intermediate_code(code_list, syntax->while_statement->body);
+            translate_syntax(code_list, syntax->while_statement->body);
             LEAVE_SCOPE();
 
             quad = quad_new(OP_GOTO);
@@ -337,7 +378,7 @@ void generate_intermediate_code(List * code_list, Syntax * syntax)
         case BLOCK:
         {
             for(int i = 0; i < list_length(syntax->block->statements); ++i)
-                generate_intermediate_code(code_list, (Syntax *)list_get(syntax->block->statements, i));
+                translate_syntax(code_list, (Syntax *)list_get(syntax->block->statements, i));
 
             break;
         }
@@ -348,7 +389,7 @@ void generate_intermediate_code(List * code_list, Syntax * syntax)
             cur_function = syntax;
 
             for(int i = 0; i < list_length(syntax->top_level->statements); ++i)
-                generate_intermediate_code(code_list, (Syntax *)list_get(syntax->top_level->statements, i));
+                translate_syntax(code_list, (Syntax *)list_get(syntax->top_level->statements, i));
 
             break;
         }
@@ -376,23 +417,20 @@ void quad_delete(Quad * quad)
 
 void new_label(char *name)
 {
-    static int number = 1;
-    sprintf(name, "Label%d", number);
-    ++number;
+    sprintf(name, "Label%d", label_number);
+    ++label_number;
 }
 
 void new_temp(char *name)
 {
-    static int number = 1;
-    sprintf(name, "t%d", number);
-    ++number;
+    sprintf(name, "t%d", temp_number);
+    ++temp_number;
 }
 
 void new_variable(char *name)
 {
-    static int number = 1;
-    sprintf(name, "v%d", number);
-    ++number;
+    sprintf(name, "v%d", variable_number);
+    ++variable_number;
 }
 
 void print_quad(FILE * fp, Quad * quad)
