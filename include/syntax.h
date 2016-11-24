@@ -2,6 +2,7 @@
 #define SCC_SYNTAX_HEADER
 
 #include <stdio.h>
+#include <stdbool.h>
 #include "list.h"
 
 struct _Syntax;
@@ -163,6 +164,7 @@ typedef struct ReturnStatement
 
 typedef struct Block 
 { 
+    bool can_be_merged;
     List *statements; 
 } Block;
 

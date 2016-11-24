@@ -102,6 +102,7 @@ Syntax * syntax_new(SyntaxType type)
         case BLOCK:
         {
             syntax->block = (Block *)malloc(sizeof(Block));
+            syntax->block->can_be_merged = false;
             syntax->block->statements = NULL;
             break;
         }
