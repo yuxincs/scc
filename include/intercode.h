@@ -62,10 +62,10 @@ typedef struct Quad
     char * result;
 } Quad;
 
-
-void generate_intermediate_code(List * code_list, Syntax * top_level);
-
+Quad * quad_new(Operator op);
+void quad_delete(Quad * quad);
 void print_quad_list(FILE *fp, List *code_list);
 
+void generate_intermediate_code(List * code_list, Syntax * top_level);
 
 #endif
