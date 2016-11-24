@@ -2,39 +2,35 @@
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
-#include "list.h"
 #include "syntax.h"
-#include "scc_yacc.h"
 #include "semantic.h"
 #include "intercode.h"
 #include "targetcode.h"
 
-extern FILE * yyin;
+
 // TODO: This method for showing more details about the file content
 // when encountering errors is not very neat and needed to be optimized
 char file_name[50];
 char *file_content[1024];
-extern int yyparse();
 
-Syntax * top_level;
-
-void read_file()
+void read_file(FILE * source_file)
 {
-    for(int i = 0; !feof(yyin); i++)
+    for(int i = 0; !feof(source_file); i++)
     {
         file_content[i] = (char * )malloc(1024 * sizeof(char));
-        fgets(file_content[i], 1024, yyin);
+        fgets(file_content[i], 1024, source_file);
         file_content[i][strlen(file_content[i]) - 1] = '\0';
     }
-    fseek(yyin, 0, 0);
+    fseek(source_file, 0, 0);
 }
 
 int main(int argc, char ** argv)
 {
     clock_t start_time = clock();
 
-    char syntax_file_name[50];
-    char ir_file_name[50];
+    FILE * source_file = NULL;
+    char syntax_file_name[100];
+    char ir_file_name[100];
 
     // read from file
     if(argc > 1)
@@ -42,12 +38,21 @@ int main(int argc, char ** argv)
         strcpy(file_name, argv[1]);
         strcpy(syntax_file_name, argv[1]);
         strcpy(ir_file_name, argv[1]);
-        yyin = fopen(argv[1], "r");
-        if(yyin == NULL)
+        source_file = fopen(argv[1], "r");
+        if(source_file == NULL)
         {
             printf("File doesn't exits.\n");
             return 1;
         }
+    }
+    else
+    {
+        printf("Usage: scc <input> [Options]\n\n");
+        printf("Options:\n");
+        printf("    %-20s Output intermediate code\n", "-i");
+        printf("    %-20s Output syntax tree\n", "-s");
+        printf("    %-20s Output assembly code\n", "-o <file>");
+        return 1;
     }
 
     // parse the options
@@ -65,7 +70,7 @@ int main(int argc, char ** argv)
             is_to_optimize = true;
         else if(strcmp(argv[i], "-o") == 0)
         {
-            if(i + 1 >= argc)
+            if(i + 1 >= argc || argv[i + 1][0] == '-')
             {
                 printf("Error! Missing file name after -o\n");
                 return 0;
@@ -84,12 +89,14 @@ int main(int argc, char ** argv)
     }
     
     // read file
-    read_file();
+    read_file(source_file);
 
     // TODO: macro expansion
 
     // syntax analysis
-    if(yyparse() != 0)
+    Syntax * top_level = NULL;
+    top_level = syntax_analysis(source_file);
+    if(top_level == NULL)
         return 0;
 
     // semantic analysis

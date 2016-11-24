@@ -6,6 +6,8 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR})
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
 
+set(CMAKE_INSTALL_PREFIX /usr/local)
+
 include_directories(include ${CMAKE_CURRENT_BINARY_DIR})
 
 # bison and flex
@@ -20,3 +22,5 @@ file(GLOB_RECURSE SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/source/*.c")
 add_executable(scc ${SOURCE_FILES}
                    ${BISON_PARSER_OUTPUTS}
                    ${FLEX_SCANNER_OUTPUTS})
+
+install(TARGETS scc RUNTIME DESTINATION bin)

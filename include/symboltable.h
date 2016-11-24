@@ -24,25 +24,19 @@ typedef struct Symbol
     
 } Symbol;
 
-Symbol * symbol_new();
-
-void symbol_delete(Symbol * symbol);
-
-
-
 typedef struct _SymbolTable
 {
     List *list;
 } SymbolTable;
 
-SymbolTable * new_symbol_table();
+Symbol * symbol_new();
+void symbol_delete(Symbol * symbol);
 
+
+SymbolTable * symbol_table_new();
 void symbol_table_delete(SymbolTable * table);
-
 Symbol * get_symbol(SymbolTable * table, char * name);
-
 void insert_symbol(SymbolTable * table, Symbol * symbol);
-
-void remove_level(SymbolTable * tabel, int level);
+void remove_symbol_by_level(SymbolTable * tabel, int level);
 
 #endif
