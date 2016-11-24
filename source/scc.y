@@ -170,6 +170,7 @@ variable_declaration_statement:
                 else if(syntax->type == ARRAY_DECLARATION)
                     syntax->array_declaration->type = $1;
             }
+            list->block->can_be_merged = true;
             $$ = list;
         }
         |
@@ -186,6 +187,7 @@ variable_declaration_statement:
                 else if(syntax->type == ARRAY_DECLARATION)
                     syntax->array_declaration->type = $1;
             }
+            list->block->can_be_merged = true;
             $$ = list;
         }
         ;
@@ -559,7 +561,16 @@ in_block_statement_list:
                 syntax->block->statements = list_new();
             }
 
-            list_prepend(syntax->block->statements, $1);
+            // if in_block_statement contains a block, merge it
+            if($1->type == BLOCK && $1->block->can_be_merged)
+            {
+                list_append_list($1->block->statements, syntax->block->statements);
+                //list_delete(syntax->block->statements);
+                syntax->block->statements = $1->block->statements;
+                //syntax_delete($1);
+            }
+            else
+                list_prepend(syntax->block->statements, $1);
             $$ = syntax;
         }
         |
