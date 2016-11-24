@@ -1,5 +1,6 @@
 #include "commonutils.h"
 #include "symboltable.h"
+#include "syntax.h"
 
 Symbol * symbol_new()
 {
@@ -16,10 +17,6 @@ void symbol_delete(Symbol * symbol)
 }
 
 
-// private function declarations
-Symbol * generate_input_function();
-Symbol * generate_output_function();
-
 Symbol * get_symbol(SymbolTable * symbol_table, char * name)
 {
     for(int i = list_length(symbol_table->list) - 1; i >= 0; --i)
@@ -29,40 +26,6 @@ Symbol * get_symbol(SymbolTable * symbol_table, char * name)
             return symbol;
     }
     return NULL;
-}
-
-void insert_symbol(SymbolTable * symbol_table, Symbol * symbol)
-{
-    list_append(symbol_table->list, symbol);
-}
-
-SymbolTable * new_symbol_table()
-{
-    SymbolTable * table = (SymbolTable *)malloc(sizeof(SymbolTable));
-    table->list = list_new();
-
-    // add default io function symbols
-    insert_symbol(table, generate_input_function());
-    insert_symbol(table, generate_output_function());
-
-    return table;
-}
-
-void symbol_table_delete(SymbolTable * table)
-{
-    for(int i = 0; i < list_length(table->list); ++i)
-    {
-        Symbol * symbol = (Symbol *)list_get(table->list, i);
-        symbol_delete(symbol);
-    }
-    list_delete(table->list);
-}
-
-void remove_level(SymbolTable * table, int level)
-{
-    while(((Symbol *)list_get(table->list, list_length(table->list) - 1))->level == level)
-        list_pop(table->list);
-    return;
 }
 
 Symbol * generate_input_function()
@@ -100,4 +63,39 @@ Symbol * generate_output_function()
     strcpy(symbol->name, "writeint");
     symbol->declaration = syntax;
     return symbol;
+}
+
+
+SymbolTable * symbol_table_new()
+{
+    SymbolTable * table = (SymbolTable *)malloc(sizeof(SymbolTable));
+    table->list = list_new();
+
+    // add default io function symbols
+    insert_symbol(table, generate_input_function());
+    insert_symbol(table, generate_output_function());
+
+    return table;
+}
+
+void symbol_table_delete(SymbolTable * table)
+{
+    for(int i = 0; i < list_length(table->list); ++i)
+    {
+        Symbol * symbol = (Symbol *)list_get(table->list, i);
+        symbol_delete(symbol);
+    }
+    list_delete(table->list);
+}
+
+void insert_symbol(SymbolTable * symbol_table, Symbol * symbol)
+{
+    list_append(symbol_table->list, symbol);
+}
+
+void remove_symbol_by_level(SymbolTable * table, int level)
+{
+    while(((Symbol *)list_get(table->list, list_length(table->list) - 1))->level == level)
+        list_pop(table->list);
+    return;
 }
