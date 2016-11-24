@@ -5,12 +5,14 @@
 #include "intercode.h"
 #include "symboltable.h"
 
+static SymbolTable * symbol_table = NULL;
+#define ENTER_SCOPE() { cur_level++; }
+#define LEAVE_SCOPE() { remove_symbol_by_level(symbol_table, cur_level); cur_level--; }
+
 // private members and functions declaration
 static int label_number = 1;
 static int temp_number = 1;
 static int variable_number = 1;
-Quad * quad_new(Operator op);
-void quad_delete(Quad * quad);
 
 void new_label(char *name);
 void new_temp(char *name);
@@ -19,15 +21,9 @@ void new_variable(char *name);
 void translate_expression(List * code_list, Syntax * syntax, char * temp);
 void translate_syntax(List * code_list, Syntax * syntax);
 
+// Used to transform from ExpressionType to Operator enumerator
 Operator binary_type_to_operator(BinaryExpressionType type);
 Operator unary_type_to_operator(UnaryExpressionType type);
-
-
-#define ENTER_SCOPE() { cur_level++; }
-
-#define LEAVE_SCOPE() { remove_level(symbol_table, cur_level); cur_level--; }
-
-extern SymbolTable * symbol_table;
 
 Operator binary_type_to_operator(BinaryExpressionType type)
 {
@@ -385,7 +381,7 @@ void translate_syntax(List * code_list, Syntax * syntax)
         case TOP_LEVEL:
         {
             // initialize the symbol table
-            symbol_table = new_symbol_table();  
+            symbol_table = symbol_table_new();  
             cur_function = syntax;
 
             for(int i = 0; i < list_length(syntax->top_level->statements); ++i)

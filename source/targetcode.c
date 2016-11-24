@@ -3,7 +3,7 @@
 #include "targetcode.h"
 #include "symboltable.h"
 
-extern SymbolTable *symbol_table;
+static SymbolTable *symbol_table;
 
 void generate_header(FILE * out)
 {
@@ -121,7 +121,7 @@ int allocate_addresses(List * code_list)
 
 void translate_function_code(FILE * out, List * code_list)
 {
-    symbol_table = new_symbol_table();
+    symbol_table = symbol_table_new();
     // traverse the code list to reserve the space for variables
     int function_stack_size = allocate_addresses(code_list);
 
