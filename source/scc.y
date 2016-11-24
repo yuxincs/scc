@@ -13,15 +13,11 @@
     extern FILE * yyin;
     extern int yylineno;
     extern char * yytext;
-    //extern int yydebug;
 
     // top level syntax definition exists in main.c
-    extern Syntax * top_level;
+    static Syntax * top_level = NULL;
     
     int yyerror(char * msg);
-    #define PAUSE system("read -n1 -p ' ' key");
-    
-    //yydebug = 1;
 %}
 %union
 {
@@ -699,6 +695,15 @@ while_statement:
 
 
 %%
+Syntax * syntax_analysis(FILE * source_file)
+{
+    yyin = source_file;
+    if(yyparse() != 0)
+        return NULL;
+    else
+        return top_level;
+}
+
 int yyerror(char *msg)
 {
     print_error(msg, yytext, yylineno);
