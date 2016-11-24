@@ -14,7 +14,7 @@
     extern int yylineno;
     extern char * yytext;
 
-    // top level syntax definition exists in main.c
+    // for storing the final output of yacc
     static Syntax * top_level = NULL;
     
     int yyerror(char * msg);
