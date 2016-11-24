@@ -39,8 +39,12 @@ bool is_variable_type_equal(Syntax * type1, Syntax * type2)
 
 Syntax * check_expression_type(Syntax * syntax)
 {
+    // TODO:
+    // the wrapped variable type syntax will not be deleted
+    // after usage, which will cause memory leaks
     if(syntax == NULL)
     {
+        // wrap the void type
         Syntax * type = syntax_new(VARIABLE_TYPE);
         type->variable_type->type = VOID;
         return type;
@@ -209,6 +213,17 @@ bool semantic_analysis(Syntax * syntax)
                 print_error(buf, syntax->variable->name, syntax->lineno);
                 is_correct = false;
             }
+            else if(previous_symbol->declaration->type != VARIABLE_DECLARATION || previous_symbol->declaration->variable_declaration->type->variable_type->type == STRUCT)
+            {
+                char buf[100];
+                if(previous_symbol->declaration->type == ARRAY_DECLARATION)
+                    sprintf(buf, "Require '[]' on array variable");
+                else if(previous_symbol->declaration->type == VARIABLE_DECLARATION && 
+                   previous_symbol->declaration->variable_declaration->type->variable_type->type == STRUCT)
+                    sprintf(buf, "Require '.' on array variable");
+                else if(previous_symbol->declaration->type == FUNCTION_DECLARATION)
+                    sprintf(buf, "Require '()' on function call");
+            }
             break;
         }
         case ARRAY_DECLARATION:
@@ -246,16 +261,13 @@ bool semantic_analysis(Syntax * syntax)
                 print_error(buf, syntax->array_variable->name, syntax->lineno);
                 is_correct = false;
             }
-            else
+            // '[]' used on non-array variable
+            else if(previous_symbol->declaration->type != ARRAY_DECLARATION)
             {
-                // '[]' used on non-array variable
-                if(previous_symbol->declaration->type != ARRAY_DECLARATION)
-                {
-                    char buf[100];
-                    sprintf(buf, "'[]' used on non-array variable '%s'", syntax->array_variable->name);
-                    print_error(buf, syntax->array_variable->name, syntax->lineno);
-                    is_correct = false;
-                }
+                char buf[100];
+                sprintf(buf, "'[]' used on non-array variable '%s'", syntax->array_variable->name);
+                print_error(buf, syntax->array_variable->name, syntax->lineno);
+                is_correct = false;
             }
             break;
         }
