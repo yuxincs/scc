@@ -15,6 +15,13 @@ bool check_syntax(Syntax * syntax);
 
 void variable_type_to_string(Syntax * type, char * type_string)
 {
+    // expression type may be NULL encountering 'return;'
+    if(type == NULL)
+    {
+        strcpy(type_string, "void");
+        return;
+    }
+
     assert(type->type == VARIABLE_TYPE);
     char buf[100];
     if(type->variable_type->type == INT)
@@ -44,20 +51,15 @@ bool is_variable_type_equal(Syntax * type1, Syntax * type2)
 
 Syntax * check_expression_type(Syntax * syntax)
 {
-    // TODO:
-    // the wrapped variable type syntax will not be deleted
-    // after usage, which will cause memory leaks
-    if(syntax == NULL)
-    {
-        // wrap the void type
-        Syntax * type = syntax_new(VARIABLE_TYPE);
-        type->variable_type->type = VOID;
-        return type;
-    }
+    assert(syntax != NULL);
+
     switch(syntax->type)
     {
         case IMMEDIATE:
         {
+            // TODO:
+            // the wrapped variable type syntax will not be deleted
+            // after usage, which will cause memory leaks
             // wrap the immediate's type
             Syntax * type = syntax_new(VARIABLE_TYPE);
             type->variable_type->type = syntax->immediate->type;
@@ -298,6 +300,7 @@ bool check_syntax(Syntax * syntax)
                 print_error(buf, struct_name, syntax->lineno);
                 print_note("Previous definition is here", syntax->struct_declaration->name, previous_symbol->declaration->lineno);
                 is_correct = false;
+                break;
             }
             ENTER_SCOPE();
             if(!check_syntax(syntax->struct_declaration->block))
@@ -380,16 +383,28 @@ bool check_syntax(Syntax * syntax)
         }
         case RETURN_STATEMENT:
         {
+            Syntax * type = NULL;
+            bool is_equal = false;
             // return type doesn't match the function type
-            Syntax * type = check_expression_type(syntax->return_statement->expression);
-            if(!is_variable_type_equal(cur_function->function_declaration->type, type))
+
+            // if it's 'return;'
+            if(syntax->return_statement->expression == NULL)
+            {
+                is_equal = cur_function->function_declaration->type->variable_type->type == VOID ? true : false; 
+            }
+            else
+            {
+                type = check_expression_type(syntax->return_statement->expression);
+                is_equal = is_variable_type_equal(cur_function->function_declaration->type, type);
+            }
+            if(!is_equal)
             {
                 char buf[100];
                 char return_type[100];
                 char function_type[100];
                 variable_type_to_string(type, return_type);
                 variable_type_to_string(cur_function->function_declaration->type, function_type);
-                sprintf(buf, "Return type '%s'' doesn't match the function type '%s'", return_type, function_type);
+                sprintf(buf, "Return type '%s' doesn't match the function type '%s'", return_type, function_type);
                 print_error(buf, "return", syntax->lineno);
                 is_correct = false;
             }
@@ -415,6 +430,7 @@ bool check_syntax(Syntax * syntax)
                 print_error(buf, syntax->function_declaration->name, syntax->lineno);
                 print_note("Previous definition is here", syntax->function_declaration->name, previous_symbol->declaration->lineno);
                 is_correct = false;
+                break;
             }
             ENTER_SCOPE();
             old_function = cur_function;

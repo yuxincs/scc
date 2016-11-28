@@ -13,6 +13,13 @@ struct foo
     float a;
     int b;
 };
+
+int test()
+{
+    // Return type 'void' doesn't match the function type 'int'
+    return;
+}
+
 // redefinition in function arguments
 int a_func(int a, int a)
 {
@@ -62,6 +69,7 @@ void main()
     b_func(1);
     // '()' used on non-function
     aaa(2);
-    return;
+    // Return type 'int' doesn't match the function type 'void'
+    return 1;
 }
 
