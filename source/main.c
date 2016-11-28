@@ -99,6 +99,14 @@ int main(int argc, char ** argv)
     if(top_level == NULL)
         return 0;
 
+    if(output_syntax_tree)
+    {
+        char * pos = strstr(syntax_file_name, ".c");
+        strcpy(pos, ".syntax");
+        FILE * fp = fopen(syntax_file_name, "w");
+        print_syntax(fp, top_level);
+    }
+
     // semantic analysis
     if(semantic_analysis(top_level) == false)
         return 0;
@@ -106,6 +114,14 @@ int main(int argc, char ** argv)
     // generate intermidiate code
     List * code_list = list_new();
     generate_intermediate_code(code_list, top_level);
+
+    if(output_ir_code)
+    {
+        char * pos = strstr(ir_file_name, ".c");
+        strcpy(pos, ".ir");
+        FILE * fp = fopen(ir_file_name, "w");
+        print_quad_list(fp, code_list);
+    }
 
     // generate target code from intermidiate code
     if(out_file == NULL)
@@ -115,22 +131,6 @@ int main(int argc, char ** argv)
         out_file = fopen(file_name, "w");
     }
     generate_target_code(out_file, code_list);
-
-    // print syntax tree and ir code
-    if(output_syntax_tree)
-    {
-        char * pos = strstr(syntax_file_name, ".c");
-        strcpy(pos, ".syntax");
-        FILE * fp = fopen(syntax_file_name, "w");
-        print_syntax(fp, top_level);
-    }
-    if(output_ir_code)
-    {
-        char * pos = strstr(ir_file_name, ".c");
-        strcpy(pos, ".ir");
-        FILE * fp = fopen(ir_file_name, "w");
-        print_quad_list(fp, code_list);
-    }
 
     clock_t end_time = clock();
     printf("\033[1;32mCompile Succeeded in %g seconds!\033[0m\n", (float)(end_time - start_time) / CLOCKS_PER_SEC);
