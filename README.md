@@ -21,9 +21,10 @@ With syntax and semantic checks available, I aim to make the compiler as complet
 * Function calls
 * Binary expression
 * Unary expression
+* Only supports `int` type to be compiled, but provide syntax and semantic checks for all types
 
 ## TODO
-* Preprocessor usage
+* Preprocessor
 * Support for `break`
 
 ## License
