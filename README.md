@@ -27,10 +27,6 @@ With syntax and semantic checks available, I aim to make the compiler as complet
 * Preprocessor
 * Support for `break`
 
-## License
-
-MIT license.
-
 ## Build
 
 The project is managed by `CMake` and needs `flex` and `bison` installed to compile the code.
@@ -61,3 +57,6 @@ And to enable debug output, run
 Will output intermediate result such as intermediate instructions(`-i`) and syntax tree(`-s`).
 
  `-o` will set the path for the assembly code output.
+ 
+## License
+[MIT](https://github.com/RyanWangGit/scc/blob/master/LICENSE).
