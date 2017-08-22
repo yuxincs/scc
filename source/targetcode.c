@@ -8,25 +8,25 @@ static SymbolTable *symbol_table;
 void generate_header(FILE * out)
 {
     fprintf(out, "%s\n",".data");
-	fprintf(out, "%s\n","_prompt: .asciiz \"Enter an integer:\"");
-	fprintf(out, "%s\n","_ret: .asciiz \"\\n\"");
-	fprintf(out, "%s\n",".globl main");
-	fprintf(out, "%s\n",".text");
-	fprintf(out, "%s\n","readint:");
-	fprintf(out, "%s\n","li $v0, 4");
-	fprintf(out, "%s\n","la $a0, _prompt");
-	fprintf(out, "%s\n","syscall");
-	fprintf(out, "%s\n","li $v0, 5");
-	fprintf(out, "%s\n","syscall");
-	fprintf(out, "%s\n","jr $ra");
-	fprintf(out, "%s\n","writeint:");
-	fprintf(out, "%s\n","li $v0, 1");
-	fprintf(out, "%s\n","syscall");
-	fprintf(out, "%s\n","li $v0, 4");
-	fprintf(out, "%s\n","la $a0, _ret");
-	fprintf(out, "%s\n","syscall");
-	fprintf(out, "%s\n","move $v0, $0");
-	fprintf(out, "%s\n","jr $ra");
+    fprintf(out, "%s\n","_prompt: .asciiz \"Enter an integer:\"");
+    fprintf(out, "%s\n","_ret: .asciiz \"\\n\"");
+    fprintf(out, "%s\n",".globl main");
+    fprintf(out, "%s\n",".text");
+    fprintf(out, "%s\n","readint:");
+    fprintf(out, "%s\n","li $v0, 4");
+    fprintf(out, "%s\n","la $a0, _prompt");
+    fprintf(out, "%s\n","syscall");
+    fprintf(out, "%s\n","li $v0, 5");
+    fprintf(out, "%s\n","syscall");
+    fprintf(out, "%s\n","jr $ra");
+    fprintf(out, "%s\n","writeint:");
+    fprintf(out, "%s\n","li $v0, 1");
+    fprintf(out, "%s\n","syscall");
+    fprintf(out, "%s\n","li $v0, 4");
+    fprintf(out, "%s\n","la $a0, _ret");
+    fprintf(out, "%s\n","syscall");
+    fprintf(out, "%s\n","move $v0, $0");
+    fprintf(out, "%s\n","jr $ra");
 }
 
 int get_variable_address(char *name)
@@ -138,7 +138,7 @@ void translate_function_code(FILE * out, List * code_list)
         Quad *quad = (Quad *)list_get(code_list, i);
         switch(quad->op)
         {
-            case OP_GOTO: 
+            case OP_GOTO:
             {
                 fprintf(out, "j %s\n", quad->result);
                 break;
@@ -168,7 +168,7 @@ void translate_function_code(FILE * out, List * code_list)
                 --i;
                 break;
             }
-            case OP_PARAM: 
+            case OP_PARAM:
             {
                 int param_count = 0;
                 while(quad->op == OP_PARAM)
@@ -186,13 +186,13 @@ void translate_function_code(FILE * out, List * code_list)
                 fprintf(out, "%s:\n", quad->result);
                 break;
             }
-            case OP_DEFINE: 
+            case OP_DEFINE:
             {
                 load_to_register(out, quad->arg1, 0);
                 fprintf(out, "sw $t0, %d($sp)\n", get_variable_address(quad->result));
                 break;
-            } 
-            case OP_CALL: 
+            }
+            case OP_CALL:
             {
                 fprintf(out, "addi $sp, $sp, -4\n");
                 fprintf(out, "sw $ra, 0($sp)\n");
@@ -202,7 +202,7 @@ void translate_function_code(FILE * out, List * code_list)
                 fprintf(out, "sw $v0, %d($sp)\n", get_variable_address(quad->result));
                 break;
             }
-            case OP_PLUS: 
+            case OP_PLUS:
             {
                 load_to_register(out, quad->arg1, 0);
                 load_to_register(out, quad->arg2, 1);
@@ -210,7 +210,7 @@ void translate_function_code(FILE * out, List * code_list)
                 fprintf(out, "sw $t0, %d($sp)\n", get_variable_address(quad->result));
                 break;
             }
-            case OP_MINUS: 
+            case OP_MINUS:
             {
                 load_to_register(out, quad->arg1, 0);
                 load_to_register(out, quad->arg2, 1);
@@ -226,7 +226,7 @@ void translate_function_code(FILE * out, List * code_list)
                 fprintf(out, "sw $t0, %d($sp)\n", get_variable_address(quad->result));
                 break;
             }
-            case OP_DIVIDE: 
+            case OP_DIVIDE:
             {
                 load_to_register(out, quad->arg1, 0);
                 load_to_register(out, quad->arg2, 1);
@@ -235,15 +235,15 @@ void translate_function_code(FILE * out, List * code_list)
                 fprintf(out, "sw $t0, %d($sp)\n", get_variable_address(quad->result));
                 break;
             }
-            case OP_LESS: 
+            case OP_LESS:
             {
                 load_to_register(out, quad->arg1, 0);
                 load_to_register(out, quad->arg2, 1);
                 fprintf(out, "%s $t0,$t1,%s\n", "blt", quad->result);
                 break;
-            } 
-                
-            case OP_GREATER: 
+            }
+
+            case OP_GREATER:
             {
                 load_to_register(out, quad->arg1, 0);
                 load_to_register(out, quad->arg2, 1);
@@ -264,7 +264,7 @@ void translate_function_code(FILE * out, List * code_list)
                 fprintf(out, "%s $t0,$t1,%s\n", "bne", quad->result);
                 break;
             }
-            case OP_LESS_OR_EQUAL: 
+            case OP_LESS_OR_EQUAL:
             {
                 load_to_register(out, quad->arg1, 0);
                 load_to_register(out, quad->arg2, 1);
