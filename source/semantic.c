@@ -1,5 +1,5 @@
 #include <assert.h>
-#include "commonutils.h"
+#include "utils.h"
 #include "semantic.h"
 
 static SymbolTable * symbol_table = NULL;
@@ -40,10 +40,10 @@ bool is_variable_type_equal(Syntax * type1, Syntax * type2)
         return false;
 
     assert(type1->type == VARIABLE_TYPE && type2->type == VARIABLE_TYPE);
-    
+
     bool is_equal = true;
     if(type1->variable_type->type != type2->variable_type->type)
-        is_equal = false; 
+        is_equal = false;
     else if(type1->variable_type->type == STRUCT && strcmp(type1->variable_type->name, type2->variable_type->name) != 0)
         is_equal = false;
     return is_equal;
@@ -123,14 +123,14 @@ Syntax * check_expression_type(Syntax * syntax)
                 assert(previous_symbol != NULL);
                 return previous_symbol->declaration->function_declaration->type;
             }
-            
+
             break;
         }
         case BINARY_EXPRESSION:
         {
             Syntax * type1 = check_expression_type(syntax->binary_expression->left);
             Syntax * type2 = check_expression_type(syntax->binary_expression->right);
-   
+
             if(type1 != NULL && type2 != NULL)
             {
                 if(!is_variable_type_equal(type1, type2))
@@ -152,7 +152,7 @@ Syntax * check_expression_type(Syntax * syntax)
         {
             return check_expression_type(syntax->unary_expression->expression);
         }
-        
+
         default: break;
     }
     return NULL;
@@ -173,7 +173,7 @@ bool check_syntax(Syntax * syntax)
         case VARIABLE_DECLARATION:
         {
             Symbol * previous_symbol = get_symbol(symbol_table, syntax->variable_declaration->name);
-            
+
             if(previous_symbol == NULL)
             {
                 Symbol *symbol = symbol_new();
@@ -196,7 +196,7 @@ bool check_syntax(Syntax * syntax)
             {
                 char struct_name[100];
                 sprintf(struct_name, "struct %s", syntax->variable_declaration->type->variable_type->name);
-                
+
                 Symbol * struct_symbol = get_symbol(symbol_table, struct_name);
                 if(struct_symbol == NULL)
                 {
@@ -211,7 +211,7 @@ bool check_syntax(Syntax * syntax)
         case VARIABLE:
         {
             Symbol * previous_symbol = get_symbol(symbol_table, syntax->variable->name);
-            
+
             // undefined variable check
             if(previous_symbol == NULL)
             {
@@ -225,7 +225,7 @@ bool check_syntax(Syntax * syntax)
                 char buf[100];
                 if(previous_symbol->declaration->type == ARRAY_DECLARATION)
                     sprintf(buf, "Require '[]' on array variable");
-                else if(previous_symbol->declaration->type == VARIABLE_DECLARATION && 
+                else if(previous_symbol->declaration->type == VARIABLE_DECLARATION &&
                    previous_symbol->declaration->variable_declaration->type->variable_type->type == STRUCT)
                     sprintf(buf, "Require '.' on array variable");
                 else if(previous_symbol->declaration->type == FUNCTION_DECLARATION)
@@ -311,7 +311,7 @@ bool check_syntax(Syntax * syntax)
         case STRUCT_VARIABLE:
         {
             Symbol * previous_symbol = get_symbol(symbol_table, syntax->struct_variable->name);
-            
+
             // undefined variable check
             if(previous_symbol == NULL)
             {
@@ -323,13 +323,13 @@ bool check_syntax(Syntax * syntax)
             else
             {
                 // illegal member access
-                if(previous_symbol->declaration->type == VARIABLE_DECLARATION && 
+                if(previous_symbol->declaration->type == VARIABLE_DECLARATION &&
                    previous_symbol->declaration->variable_declaration->type->variable_type->type == STRUCT)
                 {
                     char struct_name[100];
                     sprintf(struct_name, "struct %s", previous_symbol->declaration->variable_declaration->type->variable_type->name);
                     Symbol * struct_symbol = get_symbol(symbol_table, struct_name);
-                    
+
                     // if the variable's type is incomplete, abandon the check
                     if(struct_symbol == NULL)
                         break;
@@ -390,7 +390,7 @@ bool check_syntax(Syntax * syntax)
             // if it's 'return;'
             if(syntax->return_statement->expression == NULL)
             {
-                is_equal = cur_function->function_declaration->type->variable_type->type == VOID ? true : false; 
+                is_equal = cur_function->function_declaration->type->variable_type->type == VOID ? true : false;
             }
             else
             {
@@ -413,7 +413,7 @@ bool check_syntax(Syntax * syntax)
         case FUNCTION_DECLARATION:
         {
             Symbol * previous_symbol = get_symbol(symbol_table, syntax->function_declaration->name);
-         
+
             if(previous_symbol == NULL)
             {
                 Symbol *symbol = symbol_new();
@@ -474,7 +474,7 @@ bool check_syntax(Syntax * syntax)
                     declared_number = list_length(previous_symbol->declaration->function_declaration->arguments->block->statements);
                 if(syntax->function_call->arguments != NULL)
                     call_number = list_length(syntax->function_call->arguments->block->statements);
-                    
+
                 if(declared_number != call_number)
                 {
                     char buf[100];
@@ -565,7 +565,7 @@ bool check_syntax(Syntax * syntax)
                 if(!check_syntax((Syntax *)list_get(syntax->top_level->statements, i)))
                     is_correct = false;
             }
-                
+
             break;
         }
         default: printf("Error!Undefined type %d!\n", syntax->type); break;
@@ -576,6 +576,6 @@ bool check_syntax(Syntax * syntax)
 bool semantic_analysis(Syntax * top_level)
 {
     // initialize the symbol table
-    symbol_table = symbol_table_new(); 
+    symbol_table = symbol_table_new();
     return check_syntax(top_level);
 }

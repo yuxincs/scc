@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
-#include "commonutils.h"
+#include "utils.h"
 #include "syntax.h"
 #include "list.h"
 
@@ -167,67 +167,67 @@ void syntax_delete(Syntax * syntax)
     {
         case IMMEDIATE:
         {
-            
+
         }
         case VARIABLE_TYPE:
         {
-            
+
         }
         case VARIABLE_DECLARATION:
         {
-            
+
         }
         case VARIABLE:
         {
-            
+
         }
         case ARRAY_DECLARATION:
         {
-            
+
         }
         case ARRAY_VARIABLE:
         {
-            
+
         }
         case STRUCT_DECLARATION:
         {
-            
+
         }
         case UNARY_EXPRESSION:
         {
-            
+
         }
         case BINARY_EXPRESSION:
         {
-            
+
         }
         case BLOCK:
         {
-            
+
         }
         case IF_STATEMENT:
         {
-           
+
         }
         case RETURN_STATEMENT:
         {
-            
+
         }
         case FUNCTION_DECLARATION:
         {
-            
+
         }
         case FUNCTION_CALL:
         {
-           
+
         }
         case ASSIGNMENT:
         {
-            
+
         }
         case WHILE_STATEMENT:
         {
-           
+
         }
         case TOP_LEVEL:
         {
@@ -360,7 +360,7 @@ void print_syntax_depth(FILE *fp, Syntax * syntax, int depth)
             PRINT_SPACE(fp, depth)
             fprintf(fp, "Body: \n");
             print_syntax_depth(fp, syntax->function_declaration->block, depth + 2);
-            
+
             break;
         }
         case FUNCTION_CALL:
@@ -370,7 +370,7 @@ void print_syntax_depth(FILE *fp, Syntax * syntax, int depth)
             PRINT_SPACE(fp, depth)
             fprintf(fp, "Arguments: \n");
             print_syntax_depth(fp, syntax->function_call->arguments, depth + 2);
-         
+
             break;
         }
         case ASSIGNMENT:
@@ -383,7 +383,7 @@ void print_syntax_depth(FILE *fp, Syntax * syntax, int depth)
             PRINT_SPACE(fp, depth)
             fprintf(fp, "Expression: \n");
             print_syntax_depth(fp, syntax->assignment->expression, depth + 2);
-           
+
             break;
         }
         case WHILE_STATEMENT:
@@ -420,4 +420,3 @@ void print_syntax_depth(FILE *fp, Syntax * syntax, int depth)
         default: fprintf(fp, "Error!Undefined type!\n"); break;
     }
 }
-

@@ -1,5 +1,5 @@
-#ifndef SCC_COMMONUTILS_HEADER
-#define SCC_COMMONUTILS_HEADER
+#ifndef SCC_UTILS_HEADER
+#define SCC_UTILS_HEADER
 
 char * string_new(int size);
 

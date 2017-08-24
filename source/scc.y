@@ -1,10 +1,10 @@
-%{ 
+%{
     #include <stdio.h>
     #include <stdlib.h>
     #include <stdbool.h>
     #include <string.h>
     #include <stdarg.h>
-    #include "commonutils.h"
+    #include "utils.h"
     #include "list.h"
     #include "syntax.h"
 
@@ -16,7 +16,7 @@
 
     // for storing the final output of yacc
     static Syntax * top_level = NULL;
-    
+
     int yyerror(char * msg);
 %}
 %union
@@ -55,7 +55,7 @@ program:
                 top_level = syntax_new(TOP_LEVEL);
                 top_level->top_level->statements = cur_syntax->block->statements;
                 syntax_delete(cur_syntax);
-            }   
+            }
         }
         ;
 
@@ -160,7 +160,7 @@ variable_declaration_statement:
         basic_type variable_declaration_list ';'
         {
             Syntax * list = $2;
-            
+
             // iterate through the list and set the declaration type
             for(int i = 0;i < list_length(list->block->statements); ++i)
             {
@@ -177,7 +177,7 @@ variable_declaration_statement:
         struct_type variable_declaration_list ';'
         {
             Syntax * list = $2;
-            
+
             // iterate through the list and set the declaration type
             for(int i = 0;i < list_length(list->block->statements); ++i)
             {
@@ -208,14 +208,14 @@ variable_declaration_list:
             {
                 list_prepend(syntax->block->statements, (void *) variable);
             }
-            
+
             $$ = syntax;
         }
         |
         variable_declaration
         {
             Syntax * syntax = $1;
-            
+
             if(syntax->type != BLOCK)
             {
                 syntax = syntax_new(BLOCK);

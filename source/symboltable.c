@@ -1,4 +1,4 @@
-#include "commonutils.h"
+#include "utils.h"
 #include "symboltable.h"
 #include "syntax.h"
 
@@ -57,7 +57,7 @@ Symbol * generate_output_function()
 
     list_prepend(arguments->block->statements, int_argument);
     syntax->function_declaration->arguments = arguments;
-    
+
     Symbol * symbol = symbol_new();
     symbol->level = 0;
     strcpy(symbol->name, "writeint");

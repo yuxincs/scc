@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-#include "commonutils.h"
+#include "utils.h"
 #include "intercode.h"
 #include "symboltable.h"
 
@@ -55,7 +55,7 @@ Operator unary_type_to_operator(UnaryExpressionType type)
 void generate_intermediate_code(List * code_list, Syntax * syntax)
 {
     assert(syntax != NULL && syntax->type == TOP_LEVEL);
-    
+
     translate_syntax(code_list, syntax);
 }
 
@@ -67,7 +67,7 @@ void translate_expression(List * code_list, Syntax * syntax, char * temp)
         temp[0] = '\0';
         return;
     }
-        
+
     switch(syntax->type)
     {
         case BINARY_EXPRESSION:
@@ -101,7 +101,7 @@ void translate_expression(List * code_list, Syntax * syntax, char * temp)
         case VARIABLE:
         {
             Symbol * previous_symbol = get_symbol(symbol_table, syntax->variable->name);
-            
+
             assert(previous_symbol != NULL);
             strcpy(temp, previous_symbol->var_name);
 
@@ -137,10 +137,10 @@ void translate_expression(List * code_list, Syntax * syntax, char * temp)
         }
         case IMMEDIATE:
         {
-            sprintf(temp, "%d", syntax->immediate->int_value);   
+            sprintf(temp, "%d", syntax->immediate->int_value);
             break;
         }
-        
+
         default: printf("Error! Undefined type!\n"); break;
     }
 }
@@ -160,7 +160,7 @@ void translate_syntax(List * code_list, Syntax * syntax)
     switch(syntax->type)
     {
         case VARIABLE_DECLARATION:
-        { 
+        {
             assert(get_symbol(symbol_table, syntax->variable_declaration->name) == NULL);
 
             Symbol *symbol = symbol_new();
@@ -169,7 +169,7 @@ void translate_syntax(List * code_list, Syntax * syntax)
             symbol->var_name = string_new(5);
             new_variable(symbol->var_name);
             insert_symbol(symbol_table, symbol);
-            
+
             break;
         }
         case ARRAY_DECLARATION:
@@ -190,16 +190,16 @@ void translate_syntax(List * code_list, Syntax * syntax)
             char right_temp[5];
             translate_expression(code_list, syntax->if_statement->condition->binary_expression->left, left_temp);
             translate_expression(code_list, syntax->if_statement->condition->binary_expression->right, right_temp);
-            
+
             // reset temp number if expression is completely translated
             temp_number = 1;
-            
+
             char success_label[10];
             char failure_label[10];
             char end_label[10];
             new_label(success_label);
             new_label(failure_label);
-            
+
 
             // if code
             Quad * quad = quad_new(binary_type_to_operator(syntax->if_statement->condition->binary_expression->type));
@@ -217,7 +217,7 @@ void translate_syntax(List * code_list, Syntax * syntax)
             quad = quad_new(OP_LABEL);
             strcpy(quad->result, success_label);
             list_append(code_list, quad);
-               
+
             ENTER_SCOPE();
             translate_syntax(code_list, syntax->if_statement->then_body);
             if(syntax->if_statement->else_body != NULL)
@@ -243,7 +243,7 @@ void translate_syntax(List * code_list, Syntax * syntax)
                 list_append(code_list, quad);
                 LEAVE_SCOPE();
             }
-            
+
             break;
         }
         case RETURN_STATEMENT:
@@ -272,7 +272,7 @@ void translate_syntax(List * code_list, Syntax * syntax)
                 for(int i = 0; i < list_length(syntax->function_declaration->arguments->block->statements); ++i)
                 {
                     Syntax * argument = (Syntax *)list_get(syntax->function_declaration->arguments->block->statements, i);
-                    
+
                     // insert into symbol table
                     Symbol *symbol = symbol_new();
                     symbol->level = cur_level;
@@ -289,14 +289,14 @@ void translate_syntax(List * code_list, Syntax * syntax)
             }
 
             translate_syntax(code_list, syntax->function_declaration->block);
-               
+
             LEAVE_SCOPE();
 
             cur_function = old_function;
             break;
         }
         case FUNCTION_CALL:
-        {       
+        {
             char result_temp[5];
             translate_expression(code_list, syntax, result_temp);
             // reset temp number if expression is completely translated
@@ -343,7 +343,7 @@ void translate_syntax(List * code_list, Syntax * syntax)
 
             // reset temp number if expression is completely translated
             temp_number = 1;
-            
+
             quad = quad_new(binary_type_to_operator(syntax->while_statement->condition->binary_expression->type));
             strcpy(quad->arg1, left_temp);
             strcpy(quad->arg2, right_temp);
@@ -381,7 +381,7 @@ void translate_syntax(List * code_list, Syntax * syntax)
         case TOP_LEVEL:
         {
             // initialize the symbol table
-            symbol_table = symbol_table_new();  
+            symbol_table = symbol_table_new();
             cur_function = syntax;
 
             for(int i = 0; i < list_length(syntax->top_level->statements); ++i)
