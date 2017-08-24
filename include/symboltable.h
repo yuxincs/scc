@@ -1,5 +1,4 @@
-#ifndef SCC_SYMBOLTABLE_HEADER
-#define SCC_SYMBOLTABLE_HEADER
+#pragma once
 #include <stdlib.h>
 #include <string.h>
 #include "list.h"
@@ -21,7 +20,7 @@ typedef struct Symbol
         // used in target code generation
         int address;
     };
-    
+
 } Symbol;
 
 typedef struct _SymbolTable
@@ -38,5 +37,3 @@ void symbol_table_delete(SymbolTable * table);
 Symbol * get_symbol(SymbolTable * table, char * name);
 void insert_symbol(SymbolTable * table, Symbol * symbol);
 void remove_symbol_by_level(SymbolTable * tabel, int level);
-
-#endif

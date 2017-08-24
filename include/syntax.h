@@ -1,5 +1,4 @@
-#ifndef SCC_SYNTAX_HEADER
-#define SCC_SYNTAX_HEADER
+#pragma once
 
 #include <stdio.h>
 #include <stdbool.h>
@@ -9,7 +8,7 @@ struct _Syntax;
 typedef struct _Syntax Syntax;
 
 /* Typedefs for syntax types  */
-typedef enum 
+typedef enum
 {
     IMMEDIATE,
     VARIABLE,
@@ -39,13 +38,13 @@ typedef enum
     STRUCT
 } Type;
 
-typedef enum 
-{ 
+typedef enum
+{
     BITWISE_NEGATION,
     LOGICAL_NEGATION
 } UnaryExpressionType;
 
-typedef enum 
+typedef enum
 {
     ADDITION,
     SUBTRACTION,
@@ -59,7 +58,7 @@ typedef enum
     LESS_OR_EQUAL,
 } BinaryExpressionType;
 
-typedef struct Immediate 
+typedef struct Immediate
 {
     Type type;
     union
@@ -69,7 +68,7 @@ typedef struct Immediate
     };
 } Immediate;
 
-typedef struct VariableType 
+typedef struct VariableType
 {
     Type type;
     char *name;
@@ -111,13 +110,13 @@ typedef struct StructVariable
     char *member;
 } StructVariable;
 
-typedef struct UnaryExpression 
+typedef struct UnaryExpression
 {
     UnaryExpressionType type;
     Syntax *expression;
 } UnaryExpression;
 
-typedef struct BinaryExpression 
+typedef struct BinaryExpression
 {
     BinaryExpressionType type;
     Syntax *left;
@@ -132,52 +131,52 @@ typedef struct FunctionDeclaration
     Syntax *block;
 } FunctionDeclaration;
 
-typedef struct FunctionCall 
+typedef struct FunctionCall
 {
     char *name;
     Syntax *arguments;
 } FunctionCall;
 
-typedef struct Assignment 
+typedef struct Assignment
 {
     Syntax *dest;
     Syntax *expression;
 } Assignment;
 
-typedef struct IfStatement 
+typedef struct IfStatement
 {
     Syntax *condition;
     Syntax *then_body;
     Syntax *else_body;
 } IfStatement;
 
-typedef struct WhileStatement 
+typedef struct WhileStatement
 {
     Syntax *condition;
     Syntax *body;
 } WhileStatement;
 
-typedef struct ReturnStatement 
-{ 
-    Syntax *expression; 
+typedef struct ReturnStatement
+{
+    Syntax *expression;
 } ReturnStatement;
 
-typedef struct Block 
-{ 
+typedef struct Block
+{
     bool can_be_merged;
-    List *statements; 
+    List *statements;
 } Block;
 
-typedef struct TopLevel 
-{ 
-    List *statements; 
+typedef struct TopLevel
+{
+    List *statements;
 } TopLevel;
 
 struct _Syntax
 {
     SyntaxType type;
     int lineno;
-    union 
+    union
     {
         Immediate *immediate;
         Variable *variable;
@@ -205,5 +204,3 @@ void syntax_delete(Syntax *syntax);
 void print_syntax(FILE *fp, Syntax * syntax);
 
 Syntax * syntax_analysis(FILE * source_file);
-
-#endif

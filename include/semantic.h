@@ -1,5 +1,4 @@
-#ifndef SCC_SEMANTIC_HEADER
-#define SCC_SEMANTIC_HEADER
+#pragma once
 
 #include <stdio.h>
 #include <stdbool.h>
@@ -7,5 +6,3 @@
 #include "symboltable.h"
 
 bool semantic_analysis(Syntax * top_level);
-
-#endif

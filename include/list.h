@@ -1,10 +1,8 @@
-#ifndef SCC_LIST_HEADER
-#define SCC_LIST_HEADER
+#pragma once
 
-typedef struct _List 
-{
-    int size;
-    void **items;
+typedef struct _List {
+  int size;
+  void **items;
 } List;
 
 #define INITIAL_LIST_SIZE 32
@@ -19,5 +17,3 @@ void list_push(List *list, void *item);
 void *list_pop(List *list);
 void *list_get(List *list, int index);
 void list_set(List *list, int index, void *value);
-
-#endif

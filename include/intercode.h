@@ -1,11 +1,9 @@
-#ifndef SCC_INTERCODE_HEADER
-#define SCC_INTERCODE_HEADER
-
+#pragma once
 #include <stdio.h>
 #include "list.h"
 #include "syntax.h"
 
-/* 
+/*
  * GOTO x       (GOTO  , , , x)
  * RETURN x     (RETURN, , , x)
  * ARG x        (ARG   , , , x)
@@ -67,5 +65,3 @@ void quad_delete(Quad * quad);
 void print_quad_list(FILE *fp, List *code_list);
 
 void generate_intermediate_code(List * code_list, Syntax * top_level);
-
-#endif
