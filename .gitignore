@@ -51,3 +51,4 @@ build/
 .vscode/
 .idea/
 *.swp
+*.asm
