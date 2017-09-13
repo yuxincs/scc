@@ -8,6 +8,10 @@ branches:
 script:
   - mkdir build && cd build && cmake ..
   - make
+  - ./scc ../tests/factory.c
+  - ./scc ../tests/fibonacci.c
+  - ./scc ../tests/full_syntax_errors.c
+  - ./scc ../tests/full_semantic_errors.c
 
 compiler:
   - clang
