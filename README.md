@@ -4,7 +4,7 @@ A Simple C Compiler Written in C For Compiler Course Project.
 
 It aims only to compile a subset of C Standard to MIPS Assembly.
 
-The generated MIPS code can thus be run on any MIPS simulators or in real environment that supports MIPS. For test I run the code on QtSPIM, a good MIPS simulator for both Windows and Linux.
+The generated MIPS code can thus be run on any MIPS simulators or in real environment that supports MIPS. For test I run the code on [QtSPIM](http://spimsimulator.sourceforge.net/), a good MIPS simulator for both Windows and Linux.
 
 With syntax and semantic checks available, I aim to make the compiler as complete as possible though it is just a toy compiler.
 
