@@ -16,7 +16,7 @@ struct foo
 
 int test()
 {
-    // Return type 'void' doesn't match the function type 'int'
+    // return type 'void' doesn't match the function type 'int'
     return;
 }
 
@@ -36,7 +36,7 @@ int func(int c, int d, float f)
     h = !f;
     // '[]' used on non-array variable
     b[1] = 2;
-    // undefine variable 'nono'
+    // undefined variable 'nono'
     nono[0] = 3;
     b = a_func(1, 1);
 
@@ -69,7 +69,7 @@ void main()
     b_func(1);
     // '()' used on non-function
     aaa(2);
-    // Return type 'int' doesn't match the function type 'void'
+    // return type 'int' doesn't match the function type 'void'
     return 1;
 }
 
