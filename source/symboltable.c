@@ -97,5 +97,4 @@ void remove_symbol_by_level(SymbolTable * table, int level)
 {
     while(((Symbol *)list_get(table->list, list_length(table->list) - 1))->level == level)
         list_pop(table->list);
-    return;
 }
