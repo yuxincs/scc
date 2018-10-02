@@ -8,18 +8,16 @@ static SymbolTable *symbol_table;
 void generate_header(FILE * out)
 {
     fprintf(out, "%s\n",".data");
-    fprintf(out, "%s\n","_prompt: .asciiz \"Enter an integer:\"");
     fprintf(out, "%s\n","_ret: .asciiz \"\\n\"");
     fprintf(out, "%s\n",".globl main");
     fprintf(out, "%s\n",".text");
-    fprintf(out, "%s\n","readint:");
-    fprintf(out, "%s\n","li $v0, 4");
-    fprintf(out, "%s\n","la $a0, _prompt");
-    fprintf(out, "%s\n","syscall");
+    // __READINT internal function
+    fprintf(out, "%s\n","__READINT:");
     fprintf(out, "%s\n","li $v0, 5");
     fprintf(out, "%s\n","syscall");
     fprintf(out, "%s\n","jr $ra");
-    fprintf(out, "%s\n","writeint:");
+    // __WRITEINT internal function
+    fprintf(out, "%s\n","__WRITEINT:");
     fprintf(out, "%s\n","li $v0, 1");
     fprintf(out, "%s\n","syscall");
     fprintf(out, "%s\n","li $v0, 4");
