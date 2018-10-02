@@ -26,6 +26,12 @@ void generate_header(FILE * out)
                        "move $v0, $0\n"
                        "jr $ra\n");
 }
+
+void generate_tail(FILE *out)
+{
+    // terminate cleanly
+    fprintf(out, "%s", "li $v0, 10\n"
+                       "syscall\n");
 }
 
 int get_variable_address(char *name)
@@ -308,4 +314,6 @@ void generate_target_code(FILE * out, List * code_list)
         }
         list_append(function_code_list, quad);
     }
+
+    generate_tail(out);
 }
