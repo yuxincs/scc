@@ -35,9 +35,9 @@ int main(int argc, char ** argv)
     // read from file
     if(argc > 1)
     {
-        strcpy(file_name, argv[1]);
-        strcpy(syntax_file_name, argv[1]);
-        strcpy(ir_file_name, argv[1]);
+        strncpy(file_name, argv[1], sizeof(file_name));
+        strncpy(syntax_file_name, argv[1], sizeof(syntax_file_name));
+        strncpy(ir_file_name, argv[1], sizeof(ir_file_name));
         source_file = fopen(argv[1], "r");
         if(source_file == NULL)
         {
@@ -102,7 +102,7 @@ int main(int argc, char ** argv)
     if(output_syntax_tree)
     {
         char * pos = strstr(syntax_file_name, ".c");
-        strcpy(pos, ".syntax");
+        strncpy(pos, ".syntax", sizeof(".syntax"));
         FILE * fp = fopen(syntax_file_name, "w");
         print_syntax(fp, top_level);
     }
@@ -118,7 +118,7 @@ int main(int argc, char ** argv)
     if(output_ir_code)
     {
         char * pos = strstr(ir_file_name, ".c");
-        strcpy(pos, ".ir");
+        strncpy(pos, ".ir", sizeof(".ir"));
         FILE * fp = fopen(ir_file_name, "w");
         print_quad_list(fp, code_list);
     }
@@ -127,7 +127,7 @@ int main(int argc, char ** argv)
     if(out_file == NULL)
     {
         char * pos = strstr(file_name, ".c");
-        strcpy(pos, ".asm");
+        strncpy(pos, ".asm", ".asm");
         out_file = fopen(file_name, "w");
     }
     generate_target_code(out_file, code_list);
