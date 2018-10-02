@@ -5,11 +5,16 @@ branches:
   only:
   - master
 
+install:
+  - sudo apt-get install spim
+
 script:
   - mkdir build && cd build && cmake ..
   - make
-  - ./scc ../tests/factory.c
-  - ./scc ../tests/fibonacci.c
+  - ./scc ../tests/factory.c -o ./factory.asm
+  - [ $((echo "10" | spim -file ./factory.asm) | grep -oP "(?<=\n)[0-9]*") == "120" ]; echo $?
+  - ./scc ../tests/fibonacci.c -o ./fibonacci.asm
+  - [ $((echo "10" | spim -file ./fibonacci.asm) | grep -oP "(?<=\n)[0-9]*") == "55" ]; echo $?
   - ./scc ../tests/full_syntax_errors.c
   - ./scc ../tests/full_semantic_errors.c
 
