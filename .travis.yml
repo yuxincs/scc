@@ -12,9 +12,9 @@ script:
   - mkdir build && cd build && cmake ..
   - make
   - ./scc ../tests/factory.c -o ./factory.asm
-  - if [[ "$((echo "10" | spim -file ./factory.asm) | grep -oP "(?<=\n)[0-9]*")" != "120" ]]; then exit $? fi
+  - if [[ "$((echo "10" | spim -file ./factory.asm) | grep -oP "(?<=\\n)[0-9]*")" != "120" ]]; then exit $? fi
   - ./scc ../tests/fibonacci.c -o ./fibonacci.asm
-  - if [[ "$((echo "10" | spim -file ./fibonacci.asm) | grep -oP "(?<=\n)[0-9]*")" != "55" ]]; then exit $? fi
+  - if [[ "$((echo "10" | spim -file ./fibonacci.asm) | grep -oP "(?<=\\n)[0-9]*")" != "55" ]]; then exit $? fi
   - ./scc ../tests/full_syntax_errors.c
   - ./scc ../tests/full_semantic_errors.c
 
