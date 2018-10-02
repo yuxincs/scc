@@ -127,7 +127,7 @@ int main(int argc, char ** argv)
     if(out_file == NULL)
     {
         char * pos = strstr(file_name, ".c");
-        strncpy(pos, ".asm", ".asm");
+        strncpy(pos, ".asm", sizeof(".asm"));
         out_file = fopen(file_name, "w");
     }
     generate_target_code(out_file, code_list);
