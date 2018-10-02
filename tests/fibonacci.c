@@ -1,11 +1,11 @@
 int main()
 {
     int a = 0, b = 1, i = 0, n;
-    n = readint();
+    n = __READINT();
     while(i < n)
     {
         int c = a + b;
-        writeint(b);
+        __WRITEINT(b);
         a = b;
         b = c;
         i = i + 1;

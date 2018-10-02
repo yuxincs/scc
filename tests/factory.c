@@ -9,11 +9,11 @@ int fact(int n)
 int main()
 {
     int m, result;
-    m = readint(); 
+    m = __READINT();
     if(m > 1)
         result = fact(m);
     else
         result = 1;
-    writeint(result);
+    __WRITEINT(result);
     return 0;
 }

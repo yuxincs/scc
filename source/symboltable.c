@@ -33,11 +33,11 @@ Symbol * generate_input_function()
     Syntax * syntax = syntax_new(FUNCTION_DECLARATION);
     syntax->function_declaration->type = syntax_new(VARIABLE_TYPE);
     syntax->function_declaration->type->variable_type->type = INT;
-    strcpy(syntax->function_declaration->name, "readint");
+    strcpy(syntax->function_declaration->name, "__READINT");
 
     Symbol * symbol = symbol_new();
     symbol->level = 0;
-    strcpy(symbol->name, "readint");
+    strcpy(symbol->name, "__READINT");
     symbol->declaration = syntax;
     return symbol;
 }
@@ -47,7 +47,7 @@ Symbol * generate_output_function()
     Syntax * syntax = syntax_new(FUNCTION_DECLARATION);
     syntax->function_declaration->type = syntax_new(VARIABLE_TYPE);
     syntax->function_declaration->type->variable_type->type = VOID;
-    strcpy(syntax->function_declaration->name, "writeint");
+    strcpy(syntax->function_declaration->name, "__WRITEINT");
     Syntax * arguments = syntax_new(BLOCK);
     arguments->block->statements = list_new();
     Syntax * int_argument = syntax_new(VARIABLE_DECLARATION);
@@ -60,7 +60,7 @@ Symbol * generate_output_function()
 
     Symbol * symbol = symbol_new();
     symbol->level = 0;
-    strcpy(symbol->name, "writeint");
+    strcpy(symbol->name, "__WRITEINT");
     symbol->declaration = syntax;
     return symbol;
 }
