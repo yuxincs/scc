@@ -9,7 +9,7 @@
 integer                      [1-9]+[0-9]*|0
 float                        {integer}\.[0-9]+
 letter                       [a-zA-Z]
-identifier                   {letter}([0-9]|{letter}|_)*
+identifier                   ({letter}|_)([0-9]|{letter}|_)*
 blank                        [\t\n\x0B\f\r\x20]+
 notes                        \/\*.*\*\/|\/\/.*
 type                         int|float
