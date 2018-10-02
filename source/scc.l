@@ -22,8 +22,8 @@ struct                       { return L_STRUCT;}
 return                       { return L_RETURN; }
 void                         { return L_VOID; }
 
-{type}                       { yylval.string_value = strdup(yytext); return L_BASIC_TYPE; }
-{identifier}                 { yylval.string_value = strdup(yytext); return L_IDENTIFIER;}
+{type}                       { yylval.string_value = strndup(yytext, yyleng); return L_BASIC_TYPE; }
+{identifier}                 { yylval.string_value = strndup(yytext, yyleng); return L_IDENTIFIER;}
 {integer}                    { yylval.int_value = atoi(yytext); return L_INTEGER;}
 {float}                      { yylval.float_value = atof(yytext); return L_FLOAT;}
 
