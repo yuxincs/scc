@@ -7,24 +7,25 @@ static SymbolTable *symbol_table;
 
 void generate_header(FILE * out)
 {
-    fprintf(out, "%s\n",".data");
-    fprintf(out, "%s\n","_ret: .asciiz \"\\n\"");
-    fprintf(out, "%s\n",".globl main");
-    fprintf(out, "%s\n",".text");
-    // __READINT internal function
-    fprintf(out, "%s\n","__READINT:");
-    fprintf(out, "%s\n","li $v0, 5");
-    fprintf(out, "%s\n","syscall");
-    fprintf(out, "%s\n","jr $ra");
-    // __WRITEINT internal function
-    fprintf(out, "%s\n","__WRITEINT:");
-    fprintf(out, "%s\n","li $v0, 1");
-    fprintf(out, "%s\n","syscall");
-    fprintf(out, "%s\n","li $v0, 4");
-    fprintf(out, "%s\n","la $a0, _ret");
-    fprintf(out, "%s\n","syscall");
-    fprintf(out, "%s\n","move $v0, $0");
-    fprintf(out, "%s\n","jr $ra");
+    fprintf(out, "%s", ".data\n"
+                       "_ret: .asciiz \"\\n\"\n"
+                       ".globl main\n"
+                       ".text\n"
+                       // __READINT internal function
+                       "__READINT:\n"
+                       "li $v0, 5\n"
+                       "syscall\n"
+                       "jr $ra\n"
+                       // __WRITEINT internal function
+                       "__WRITEINT:\n"
+                       "li $v0, 1\n"
+                       "syscall\n"
+                       "li $v0, 4\n"
+                       "la $a0, _ret\n"
+                       "syscall\n"
+                       "move $v0, $0\n"
+                       "jr $ra\n");
+}
 }
 
 int get_variable_address(char *name)
