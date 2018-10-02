@@ -7,21 +7,21 @@ It aims only to compile a subset of C Standard to MIPS Assembly.
 The generated MIPS code can thus be run on any MIPS simulators or in real environment that supports MIPS. For testing purposes I run the code on [QtSPIM](http://spimsimulator.sourceforge.net/), a good multi-platform MIPS simulator.
 
 ## Current feature set
-* Basic operations (e.g. addition multiplication less than operation bitwise negation etc.)
-* Comments (`// foo` and `/* foo */`)
-* Sequences of statements (`foo; bar`)
-* Return statements
-* If statements and else statements
-* Local variables
-* Basic varibale types (only `float` and `int` is supported)
-* Variable assignment
-* While loops (`while (foo) { bar }`)
-* Function calls
-* Binary expression
-* Unary expression
-* Only supports `int` type to be compiled, but provide syntax and semantic checks for all types
-* No preprocessors
-* No `break` statement
+*  Basic operations (e.g. addition multiplication less than operation bitwise negation etc.)
+*  Comments (`// foo` and `/* foo */`)
+*  Sequences of statements (`foo; bar`)
+*  Return statements
+*  If statements and else statements
+*  Local variables
+*  Basic varibale types (only `float` and `int` is supported)
+*  Variable assignment
+*  While loops (`while (foo) { bar }`)
+*  Function calls
+*  Binary expression
+*  Unary expression
+*  Only supports `int` type to be compiled, but provide syntax and semantic checks for all types
+*  No preprocessors
+*  No `break` statement
 
 ## Build
 
@@ -29,7 +29,7 @@ The project is managed by `CMake` and needs `flex` and `bison` installed to comp
 
 Simply run
 
-```
+```bash
 $ mkdir build
 $ cd build
 $ cmake ..
