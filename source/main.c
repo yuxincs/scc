@@ -94,8 +94,7 @@ int main(int argc, char **argv)
     // TODO: macro expansion
 
     // syntax analysis
-    Syntax *top_level = NULL;
-    top_level = syntax_analysis(source_file);
+    Syntax *top_level = syntax_analysis(source_file);
     if(top_level == NULL)
         return 0;
 
