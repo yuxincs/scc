@@ -5,4 +5,4 @@
 #include "syntax.h"
 #include "symboltable.h"
 
-bool semantic_analysis(Syntax * top_level);
+bool semantic_analysis(Syntax *top_level);

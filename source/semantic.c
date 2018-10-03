@@ -2,18 +2,18 @@
 #include "utils.h"
 #include "semantic.h"
 
-static SymbolTable * symbol_table = NULL;
+static SymbolTable *symbol_table = NULL;
 #define ENTER_SCOPE() { cur_level++; }
 #define LEAVE_SCOPE() { remove_symbol_by_level(symbol_table, cur_level); cur_level--; }
 
 // private function declarations
-void variable_type_to_string(Syntax * type, char * type_string);
-bool is_variable_type_equal(Syntax * type1, Syntax * type2);
-Syntax * check_expression_type(Syntax * syntax);
-bool check_syntax(Syntax * syntax);
+void variable_type_to_string(Syntax *type, char *type_string);
+bool is_variable_type_equal(Syntax *type1, Syntax *type2);
+Syntax *check_expression_type(Syntax *syntax);
+bool check_syntax(Syntax *syntax);
 
 
-void variable_type_to_string(Syntax * type, char * type_string)
+void variable_type_to_string(Syntax *type, char *type_string)
 {
     // expression type may be NULL encountering 'return;'
     if(type == NULL)
@@ -34,7 +34,7 @@ void variable_type_to_string(Syntax * type, char * type_string)
         strcpy(type_string, "void");
 }
 
-bool is_variable_type_equal(Syntax * type1, Syntax * type2)
+bool is_variable_type_equal(Syntax *type1, Syntax *type2)
 {
     if(type1 == NULL || type2 == NULL)
         return false;
@@ -49,7 +49,7 @@ bool is_variable_type_equal(Syntax * type1, Syntax * type2)
     return is_equal;
 }
 
-Syntax * check_expression_type(Syntax * syntax)
+Syntax *check_expression_type(Syntax *syntax)
 {
     assert(syntax != NULL);
 
@@ -61,7 +61,7 @@ Syntax * check_expression_type(Syntax * syntax)
             // the wrapped variable type syntax will not be deleted
             // after usage, which will cause memory leaks
             // wrap the immediate's type
-            Syntax * type = syntax_new(VARIABLE_TYPE);
+            Syntax *type = syntax_new(VARIABLE_TYPE);
             type->variable_type->type = syntax->immediate->type;
             return type;
         }
@@ -69,7 +69,7 @@ Syntax * check_expression_type(Syntax * syntax)
         {
             if(check_syntax(syntax))
             {
-                Symbol * previous_symbol = get_symbol(symbol_table, syntax->variable->name);
+                Symbol *previous_symbol = get_symbol(symbol_table, syntax->variable->name);
                 if(previous_symbol != NULL)
                     return previous_symbol->declaration->variable_declaration->type;
             }
@@ -79,7 +79,7 @@ Syntax * check_expression_type(Syntax * syntax)
         {
             if(check_syntax(syntax))
             {
-                Symbol * previous_symbol = get_symbol(symbol_table, syntax->array_variable->name);
+                Symbol *previous_symbol = get_symbol(symbol_table, syntax->array_variable->name);
                 if(previous_symbol != NULL)
                     return previous_symbol->declaration->array_declaration->type;
             }
@@ -89,15 +89,15 @@ Syntax * check_expression_type(Syntax * syntax)
         {
             if(check_syntax(syntax))
             {
-                Symbol * previous_symbol = get_symbol(symbol_table, syntax->struct_variable->name);
+                Symbol *previous_symbol = get_symbol(symbol_table, syntax->struct_variable->name);
 
                 assert(previous_symbol != NULL);
                 char struct_name[100];
                 sprintf(struct_name, "struct %s", previous_symbol->declaration->variable_declaration->type->variable_type->name);
-                Symbol * struct_symbol = get_symbol(symbol_table, struct_name);
+                Symbol *struct_symbol = get_symbol(symbol_table, struct_name);
                 assert(struct_symbol != NULL);
 
-                Syntax * block = struct_symbol->declaration->struct_declaration->block;
+                Syntax *block = struct_symbol->declaration->struct_declaration->block;
                 for(int i = 0; i < list_length(block->block->statements) - 1; ++i)
                 {
                     Syntax * declaration = list_get(block->block->statements, i);

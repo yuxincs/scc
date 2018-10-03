@@ -12,7 +12,7 @@ typedef struct Symbol
     union
     {
         // used in semantic analysis
-        Syntax * declaration;
+        Syntax *declaration;
 
         // used in intermediate code generation
         char *var_name;
@@ -28,12 +28,12 @@ typedef struct _SymbolTable
     List *list;
 } SymbolTable;
 
-Symbol * symbol_new();
-void symbol_delete(Symbol * symbol);
+Symbol *symbol_new();
+void symbol_delete(Symbol *symbol);
 
 
-SymbolTable * symbol_table_new();
-void symbol_table_delete(SymbolTable * table);
-Symbol * get_symbol(SymbolTable * table, char * name);
-void insert_symbol(SymbolTable * table, Symbol * symbol);
-void remove_symbol_by_level(SymbolTable * tabel, int level);
+SymbolTable *symbol_table_new();
+void symbol_table_delete(SymbolTable *table);
+Symbol *get_symbol(SymbolTable *table, char *name);
+void insert_symbol(SymbolTable *table, Symbol *symbol);
+void remove_symbol_by_level(SymbolTable *tabel, int level);

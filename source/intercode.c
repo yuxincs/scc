@@ -5,7 +5,7 @@
 #include "intercode.h"
 #include "symboltable.h"
 
-static SymbolTable * symbol_table = NULL;
+static SymbolTable *symbol_table = NULL;
 #define ENTER_SCOPE() { cur_level++; }
 #define LEAVE_SCOPE() { remove_symbol_by_level(symbol_table, cur_level); cur_level--; }
 
@@ -18,8 +18,8 @@ void new_label(char *name);
 void new_temp(char *name);
 void new_variable(char *name);
 
-void translate_expression(List * code_list, Syntax * syntax, char * temp);
-void translate_syntax(List * code_list, Syntax * syntax);
+void translate_expression(List *code_list, Syntax *syntax, char *temp);
+void translate_syntax(List *code_list, Syntax *syntax);
 
 // Used to transform from ExpressionType to Operator enumerator
 Operator binary_type_to_operator(BinaryExpressionType type);
@@ -52,7 +52,7 @@ Operator unary_type_to_operator(UnaryExpressionType type)
 }
 
 
-void generate_intermediate_code(List * code_list, Syntax * syntax)
+void generate_intermediate_code(List *code_list, Syntax *syntax)
 {
     assert(syntax != NULL && syntax->type == TOP_LEVEL);
 
@@ -60,7 +60,7 @@ void generate_intermediate_code(List * code_list, Syntax * syntax)
 }
 
 
-void translate_expression(List * code_list, Syntax * syntax, char * temp)
+void translate_expression(List *code_list, Syntax *syntax, char *temp)
 {
     if(syntax == NULL)
     {
@@ -77,7 +77,7 @@ void translate_expression(List * code_list, Syntax * syntax, char * temp)
             char result_temp[5];
             translate_expression(code_list, syntax->binary_expression->left, left_temp);
             translate_expression(code_list, syntax->binary_expression->right, right_temp);
-            Quad * quad = quad_new(binary_type_to_operator(syntax->binary_expression->type));
+            Quad *quad = quad_new(binary_type_to_operator(syntax->binary_expression->type));
             strcpy(quad->arg1, left_temp);
             strcpy(quad->arg2, right_temp);
             new_temp(quad->result);
@@ -90,7 +90,7 @@ void translate_expression(List * code_list, Syntax * syntax, char * temp)
         {
             char result_temp[5];
             translate_expression(code_list, syntax->unary_expression->expression, result_temp);
-            Quad * quad = quad_new(unary_type_to_operator(syntax->unary_expression->type));
+            Quad *quad = quad_new(unary_type_to_operator(syntax->unary_expression->type));
             strcpy(quad->arg1, result_temp);
             strcpy(quad->result, temp);
             list_append(code_list, quad);
@@ -100,7 +100,7 @@ void translate_expression(List * code_list, Syntax * syntax, char * temp)
         }
         case VARIABLE:
         {
-            Symbol * previous_symbol = get_symbol(symbol_table, syntax->variable->name);
+            Symbol *previous_symbol = get_symbol(symbol_table, syntax->variable->name);
 
             assert(previous_symbol != NULL);
             strcpy(temp, previous_symbol->var_name);
@@ -109,15 +109,15 @@ void translate_expression(List * code_list, Syntax * syntax, char * temp)
         }
         case FUNCTION_CALL:
         {
-            List * arg_list = list_new();
+            List *arg_list = list_new();
             if(syntax->function_call->arguments != NULL)
             {
                 for(int i = 0; i < list_length(syntax->function_call->arguments->block->statements); ++i)
                 {
-                    Syntax * argument = (Syntax *)list_get(syntax->function_call->arguments->block->statements, i);
+                    Syntax *argument = (Syntax *)list_get(syntax->function_call->arguments->block->statements, i);
                     char result_temp[5];
                     translate_expression(code_list, argument, result_temp);
-                    Quad * quad = quad_new(OP_ARG);
+                    Quad *quad = quad_new(OP_ARG);
                     strcpy(quad->result, result_temp);
                     list_append(arg_list, quad);
                 }
@@ -126,7 +126,7 @@ void translate_expression(List * code_list, Syntax * syntax, char * temp)
             list_append_list(code_list, arg_list);
             list_delete(arg_list);
 
-            Quad * quad = quad_new(OP_CALL);
+            Quad *quad = quad_new(OP_CALL);
             new_temp(quad->result);
             strcpy(quad->arg1, syntax->function_call->name);
             list_append(code_list, quad);
@@ -146,11 +146,11 @@ void translate_expression(List * code_list, Syntax * syntax, char * temp)
 }
 
 
-void translate_syntax(List * code_list, Syntax * syntax)
+void translate_syntax(List *code_list, Syntax *syntax)
 {
     static int cur_level = 0;
-    static Syntax * cur_function = NULL;
-    static Syntax * old_function = NULL;
+    static Syntax *cur_function = NULL;
+    static Syntax *old_function = NULL;
 
     if(syntax == NULL)
     {
@@ -202,7 +202,7 @@ void translate_syntax(List * code_list, Syntax * syntax)
 
 
             // if code
-            Quad * quad = quad_new(binary_type_to_operator(syntax->if_statement->condition->binary_expression->type));
+            Quad *quad = quad_new(binary_type_to_operator(syntax->if_statement->condition->binary_expression->type));
             strcpy(quad->arg1, left_temp);
             strcpy(quad->arg2, right_temp);
             strcpy(quad->result, success_label);
@@ -248,7 +248,7 @@ void translate_syntax(List * code_list, Syntax * syntax)
         }
         case RETURN_STATEMENT:
         {
-            Quad * quad = quad_new(OP_RETURN);
+            Quad *quad = quad_new(OP_RETURN);
             translate_expression(code_list, syntax->return_statement->expression, quad->result);
             // reset temp number if expression is completely translated
             temp_number = 1;
@@ -258,7 +258,7 @@ void translate_syntax(List * code_list, Syntax * syntax)
         }
         case FUNCTION_DECLARATION:
         {
-            Quad * quad = quad_new(OP_FUNCTION);
+            Quad *quad = quad_new(OP_FUNCTION);
             strcpy(quad->result, syntax->function_declaration->name);
             list_append(code_list, quad);
 
@@ -271,7 +271,7 @@ void translate_syntax(List * code_list, Syntax * syntax)
             {
                 for(int i = 0; i < list_length(syntax->function_declaration->arguments->block->statements); ++i)
                 {
-                    Syntax * argument = (Syntax *)list_get(syntax->function_declaration->arguments->block->statements, i);
+                    Syntax *argument = (Syntax *)list_get(syntax->function_declaration->arguments->block->statements, i);
 
                     // insert into symbol table
                     Symbol *symbol = symbol_new();
@@ -282,7 +282,7 @@ void translate_syntax(List * code_list, Syntax * syntax)
                     insert_symbol(symbol_table, symbol);
 
                     // add PARAM code
-                    Quad * quad = quad_new(OP_PARAM);
+                    Quad *quad = quad_new(OP_PARAM);
                     strcpy(quad->result, symbol->var_name);
                     list_append(code_list, quad);
                 }
@@ -393,9 +393,9 @@ void translate_syntax(List * code_list, Syntax * syntax)
     }
 }
 
-Quad * quad_new(Operator op)
+Quad *quad_new(Operator op)
 {
-    Quad * quad = (Quad *)malloc(sizeof(Quad));
+    Quad *quad = (Quad *)malloc(sizeof(Quad));
     quad->op = op;
     quad->arg1 = string_new(33);
     quad->arg2 = string_new(33);
@@ -403,7 +403,7 @@ Quad * quad_new(Operator op)
     return quad;
 }
 
-void quad_delete(Quad * quad)
+void quad_delete(Quad *quad)
 {
     free(quad->arg1);
     free(quad->arg2);
@@ -429,16 +429,16 @@ void new_variable(char *name)
     ++variable_number;
 }
 
-void print_quad(FILE * fp, Quad * quad)
+void print_quad(FILE *fp, Quad *quad)
 {
     fprintf(fp, "(%d, %s, %s, %s)\n", quad->op, quad->arg1, quad->arg2, quad->result);
 }
 
-void print_quad_list(FILE * fp, List *code_list)
+void print_quad_list(FILE *fp, List *code_list)
 {
     for(int i = 0; i < list_length(code_list); ++i)
     {
-        Quad * quad = (Quad *)list_get(code_list, i);
+        Quad *quad = (Quad *)list_get(code_list, i);
         fprintf(fp, "%d: ", i + 1);
         print_quad(fp, quad);
     }

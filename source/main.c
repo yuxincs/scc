@@ -13,22 +13,22 @@
 char file_name[50];
 char *file_content[1024];
 
-void read_file(FILE * source_file)
+void read_file(FILE *source_file)
 {
     for(int i = 0; !feof(source_file); i++)
     {
-        file_content[i] = (char * )malloc(1024 * sizeof(char));
+        file_content[i] = (char *)malloc(1024 * sizeof(char));
         fgets(file_content[i], 1024, source_file);
         file_content[i][strlen(file_content[i]) - 1] = '\0';
     }
     fseek(source_file, 0, 0);
 }
 
-int main(int argc, char ** argv)
+int main(int argc, char **argv)
 {
     clock_t start_time = clock();
 
-    FILE * source_file = NULL;
+    FILE *source_file = NULL;
     char syntax_file_name[100];
     char ir_file_name[100];
 
@@ -59,7 +59,7 @@ int main(int argc, char ** argv)
     bool output_syntax_tree = false;
     bool output_ir_code = false;
     bool is_to_optimize = false;
-    FILE * out_file = NULL;
+    FILE *out_file = NULL;
     for(int i = 2; i < argc; ++i)
     {
         if(strcmp(argv[i], "-s") == 0)
@@ -94,16 +94,16 @@ int main(int argc, char ** argv)
     // TODO: macro expansion
 
     // syntax analysis
-    Syntax * top_level = NULL;
+    Syntax *top_level = NULL;
     top_level = syntax_analysis(source_file);
     if(top_level == NULL)
         return 0;
 
     if(output_syntax_tree)
     {
-        char * pos = strstr(syntax_file_name, ".c");
+        char *pos = strstr(syntax_file_name, ".c");
         strncpy(pos, ".syntax", sizeof(".syntax"));
-        FILE * fp = fopen(syntax_file_name, "w");
+        FILE *fp = fopen(syntax_file_name, "w");
         print_syntax(fp, top_level);
     }
 
@@ -112,21 +112,21 @@ int main(int argc, char ** argv)
         return 0;
 
     // generate intermidiate code
-    List * code_list = list_new();
+    List *code_list = list_new();
     generate_intermediate_code(code_list, top_level);
 
     if(output_ir_code)
     {
-        char * pos = strstr(ir_file_name, ".c");
+        char *pos = strstr(ir_file_name, ".c");
         strncpy(pos, ".ir", sizeof(".ir"));
-        FILE * fp = fopen(ir_file_name, "w");
+        FILE *fp = fopen(ir_file_name, "w");
         print_quad_list(fp, code_list);
     }
 
     // generate target code from intermidiate code
     if(out_file == NULL)
     {
-        char * pos = strstr(file_name, ".c");
+        char *pos = strstr(file_name, ".c");
         strncpy(pos, ".asm", sizeof(".asm"));
         out_file = fopen(file_name, "w");
     }

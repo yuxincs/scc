@@ -55,13 +55,13 @@ typedef enum Operator
 typedef struct Quad
 {
     Operator op;
-    char * arg1;
-    char * arg2;
-    char * result;
+    char *arg1;
+    char *arg2;
+    char *result;
 } Quad;
 
-Quad * quad_new(Operator op);
-void quad_delete(Quad * quad);
+Quad *quad_new(Operator op);
+void quad_delete(Quad *quad);
 void print_quad_list(FILE *fp, List *code_list);
 
-void generate_intermediate_code(List * code_list, Syntax * top_level);
+void generate_intermediate_code(List *code_list, Syntax *top_level);

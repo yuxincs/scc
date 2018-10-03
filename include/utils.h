@@ -1,6 +1,6 @@
 #pragma once
 
-char * string_new(int size);
+char *string_new(int size);
 
 void print_error(char *msg, char *error_part, int lineno);
 

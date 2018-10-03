@@ -6,9 +6,9 @@
 extern char file_name[1024];
 extern char *file_content[1024];
 
-char * string_new(int size)
+char *string_new(int size)
 {
-    char * buf = (char *)malloc(sizeof(char) * size);
+    char *buf = (char *)malloc(sizeof(char) * size);
     buf[0] = '\0';
     return buf;
 }
@@ -20,7 +20,7 @@ void print_error(char *msg, char *error_part, int lineno)
     if(error_part != NULL)
     {
         int index = -1;
-        char * pos = strstr(file_content[lineno - 1], error_part);
+        char *pos = strstr(file_content[lineno - 1], error_part);
         if(pos != NULL)
             index = pos - file_content[lineno - 1];
 
@@ -42,7 +42,7 @@ void print_note(char *msg, char *note_part, int lineno)
     if(note_part != NULL)
     {
         int index = -1;
-        char * pos = strstr(file_content[lineno - 1], note_part);
+        char *pos = strstr(file_content[lineno - 1], note_part);
         if(pos != NULL)
             index = pos - file_content[lineno - 1];
 

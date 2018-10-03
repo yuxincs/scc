@@ -12,17 +12,17 @@
 extern int yylineno;
 
 // private functions declarations
-void print_syntax_depth(FILE *fp, Syntax * syntax, int depth);
+void print_syntax_depth(FILE *fp, Syntax *syntax, int depth);
 
 
-void print_syntax(FILE *fp, Syntax * syntax)
+void print_syntax(FILE *fp, Syntax *syntax)
 {
     print_syntax_depth(fp, syntax, 0);
 }
 
-Syntax * syntax_new(SyntaxType type)
+Syntax *syntax_new(SyntaxType type)
 {
-    Syntax * syntax = (Syntax *)malloc(sizeof(Syntax));
+    Syntax *syntax = (Syntax *)malloc(sizeof(Syntax));
     syntax->type = type;
     // store the current line number into the syntax
     syntax->lineno = yylineno;
@@ -161,7 +161,7 @@ Syntax * syntax_new(SyntaxType type)
     return syntax;
 }
 
-void syntax_delete(Syntax * syntax)
+void syntax_delete(Syntax *syntax)
 {
     switch(syntax->type)
     {
@@ -240,7 +240,7 @@ void syntax_delete(Syntax * syntax)
 
 
 
-void print_syntax_depth(FILE *fp, Syntax * syntax, int depth)
+void print_syntax_depth(FILE *fp, Syntax *syntax, int depth)
 {
     if(syntax == NULL)
     {

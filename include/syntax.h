@@ -199,8 +199,8 @@ struct _Syntax
     };
 };
 
-Syntax * syntax_new(SyntaxType type);
+Syntax *syntax_new(SyntaxType type);
 void syntax_delete(Syntax *syntax);
-void print_syntax(FILE *fp, Syntax * syntax);
+void print_syntax(FILE *fp, Syntax *syntax);
 
-Syntax * syntax_analysis(FILE * source_file);
+Syntax *syntax_analysis(FILE *source_file);

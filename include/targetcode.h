@@ -4,4 +4,4 @@
 #include "list.h"
 #include "intercode.h"
 
-void generate_target_code(FILE * out, List * code_list);
+void generate_target_code(FILE *out, List *code_list);
