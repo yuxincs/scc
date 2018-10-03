@@ -36,8 +36,7 @@ cmake ..
 make
 ```
 
-And the compiler is ready to use. In the `tests` directory are some basic tests I personally use to test the compiler,
-run `make test` to run all the basic test source files, including some with intentional syntax and semantic errors.
+And the compiler is ready to use. In the `tests` directory are some basic tests I personally use to test the compiler, including some with intentional syntax and semantic errors.
 
 ## Usage
 To compile the source code using the compiler, run
