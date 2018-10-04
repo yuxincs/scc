@@ -58,7 +58,6 @@ int main(int argc, char **argv)
     // parse the options
     bool output_syntax_tree = false;
     bool output_ir_code = false;
-    bool is_to_optimize = false;
     FILE *out_file = NULL;
     for(int i = 2; i < argc; ++i)
     {
@@ -66,8 +65,6 @@ int main(int argc, char **argv)
             output_syntax_tree = true;
         else if(strcmp(argv[i], "-i") == 0)
             output_ir_code = true;
-        else if(strcmp(argv[i], "-opt") == 0)
-            is_to_optimize = true;
         else if(strcmp(argv[i], "-o") == 0)
         {
             if(i + 1 >= argc || argv[i + 1][0] == '-')
