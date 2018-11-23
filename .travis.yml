@@ -1,9 +1,9 @@
 language:
   c
 
-branches:
-  only:
-  - master
+compiler:
+  - clang
+  - gcc
 
 install:
   - sudo apt-get install spim
@@ -18,6 +18,6 @@ script:
   - ./scc ../tests/full_syntax_errors.c
   - ./scc ../tests/full_semantic_errors.c
 
-compiler:
-  - clang
-  - gcc
+branches:
+  only:
+  - master
