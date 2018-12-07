@@ -6,7 +6,8 @@ compiler:
   - gcc
 
 install:
-  - sudo apt-get install spim
+  - sudo apt-get update
+  - sudo apt-get install spim flex bison
 
 script:
   - mkdir build && cd build && cmake ..
