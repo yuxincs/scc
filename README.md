@@ -1,4 +1,4 @@
-# Scc [![Build Status](https://travis-ci.org/yxwangcs/scc.svg?branch=master)](https://travis-ci.org/yxwangcs/scc)
+# Scc [![Build Status](https://travis-ci.com/yxwangcs/scc.svg?branch=master)](https://travis-ci.com/yxwangcs/scc)
 
 A Simple C Compiler Written in C For Compiler Course Project.
 
