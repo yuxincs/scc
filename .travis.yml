@@ -19,6 +19,5 @@ script:
   - ./scc ../tests/full_syntax_errors.c
   - ./scc ../tests/full_semantic_errors.c
 
-branches:
-  only:
-  - master
+notifications:
+  email: false
