@@ -2,9 +2,8 @@ cmake_minimum_required(VERSION 2.8)
 
 project(scc)
 
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR})
-
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD_REQUIRED ON)
 
 set(CMAKE_INSTALL_PREFIX /usr/local)
 
@@ -22,5 +21,6 @@ file(GLOB_RECURSE SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/source/*.c")
 add_executable(scc ${SOURCE_FILES}
                    ${BISON_PARSER_OUTPUTS}
                    ${FLEX_SCANNER_OUTPUTS})
+target_compile_options(scc PUBLIC -W -Wall -Wextra)
 
 install(TARGETS scc RUNTIME DESTINATION bin)
