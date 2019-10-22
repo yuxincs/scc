@@ -27,6 +27,7 @@ jobs:
         mkdir build && cd build
         cmake -DCMAKE_BUILD_TYPE=Debug ..
         cmake --build . --config Debug
+        chmod +x ../tests/test.sh
         ../tests/test.sh ./scc
         
     - name: Release build and test
@@ -34,4 +35,5 @@ jobs:
         rm -rf build && mkdir build && cd build
         cmake -DCMAKE_BUILD_TYPE=Release ..
         cmake --build . --config Release
+        chmod +x ../tests/test.sh
         ../tests/test.sh ./scc
