@@ -1,0 +1,35 @@
+name: C/C++ CI
+
+on: [push]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macOS-latest]
+
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install dependencies (Ubuntu)
+      if: startsWith(matrix.os, 'Ubuntu')
+      run: |
+        sudo apt-get update
+        sudo apt-get install bison flex spim
+    - name: Install dependencies (macOS)
+      if: startsWith(matrix.os, 'macOS')
+      run: |
+        brew update
+        brew install bison flex spim
+    - name: Debug build and test
+      run: |
+        mkdir build && cd build
+        cmake -DCMAKE_BUILD_TYPE=Debug ..
+        cmake --build . --config Debug
+        
+    - name: Release build and test
+      run: |
+        rm -rf build && mkdir build && cd build
+        cmake -DCMAKE_BUILD_TYPE=Release ..
+        cmake --build . --config Release
