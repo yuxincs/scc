@@ -1,4 +1,4 @@
-# Scc [![Build Status](https://travis-ci.com/yxwangcs/scc.svg?branch=master)](https://travis-ci.com/yxwangcs/scc)
+# Scc [![Build Status](https://travis-ci.com/yuxincs/scc.svg?branch=master)](https://travis-ci.com/yuxincs/scc)
 
 A Simple C Compiler Written in C For Compiler Course Project.
 
@@ -54,4 +54,4 @@ Will output intermediate result such as intermediate instructions(`-i`) and synt
  `-o` will set the path for the assembly code output.
  
 ## License
-[MIT](https://github.com/yxwangcs/scc/blob/master/LICENSE).
+[MIT](https://github.com/yuxincs/scc/blob/master/LICENSE).
