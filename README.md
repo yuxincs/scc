@@ -1,4 +1,5 @@
-# Scc [![Build Status](https://travis-ci.com/yuxincs/scc.svg?branch=master)](https://travis-ci.com/yuxincs/scc)
+# Scc 
+[![Build Status](https://github.com/yuxincs/scc/workflows/build/badge.svg)](https://github.com/yuxincs/scc/actions)
 
 A Simple C Compiler Written in C For Compiler Course Project.
 
